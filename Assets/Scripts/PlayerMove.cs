@@ -15,6 +15,10 @@ public class PlayerMove : MonoBehaviour
     private bool isGrounded;
     private float gravity = -9.81f;
 
+    public ItemScriptableObject item;
+    public float pickableRadius = 2f;
+    public LayerMask pickableLayerMask;
+
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -36,5 +40,17 @@ public class PlayerMove : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+        Collider[] pickableObjects = Physics.OverlapSphere(groundCheck.position, pickableRadius, pickableLayerMask);
+        foreach (var collider in pickableObjects)
+        {
+            Debug.Log(collider.name);
+
+        }
+        
+
+
+        
+
     }
 }

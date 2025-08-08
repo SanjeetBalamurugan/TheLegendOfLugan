@@ -25,6 +25,6 @@ public class PlayerCamera : MonoBehaviour
 
         transform.localRotation = Quaternion.Euler(yRot, 0, 0);
         Player.Rotate(Vector3.up * mouseX);
-        Debug.Log(mouseX);
+       
     }
 }
