@@ -44,8 +44,10 @@ public class PlayerMove : MonoBehaviour
         Collider[] pickableObjects = Physics.OverlapSphere(groundCheck.position, pickableRadius, pickableLayerMask);
         foreach (var collider in pickableObjects)
         {
-            Debug.Log(collider.name);
+            ItemHandler handler = collider.GetComponent<ItemHandler>();
 
+            ItemManager.instance.AddInventoryItems(handler.GetItemData());
+            Destroy(collider.gameObject);
         }
         
 

@@ -7,7 +7,6 @@ public class TPVCamera : MonoBehaviour
     public float mouseSensitivity = 2f;
     private float xRotation = 0f;
     private float yRotation = 0f;
-    public PlayerMovement playerMovement;
 
     void Update()
     {
@@ -22,14 +21,5 @@ public class TPVCamera : MonoBehaviour
 
         freeLookCamera.m_XAxis.Value = yRotation;
         freeLookCamera.m_YAxis.Value = xRotation;
-
-        if (playerMovement != null && !playerMovement.isGrounded)
-        {
-            freeLookCamera.m_Lens.FieldOfView = Mathf.Lerp(freeLookCamera.m_Lens.FieldOfView, 60f, Time.deltaTime * 5f);
-        }
-        else
-        {
-            freeLookCamera.m_Lens.FieldOfView = Mathf.Lerp(freeLookCamera.m_Lens.FieldOfView, 50f, Time.deltaTime * 5f);
-        }
     }
 }
