@@ -4,17 +4,11 @@ using Cinemachine;
 public class TPVCamera : MonoBehaviour
 {
     public CinemachineFreeLook freeLookCamera;
-    public Transform player;
     public float mouseSensitivity = 3f;
     public float smoothing = 5f;
-    public float upperClamp = 70f;
-    public float lowerClamp = -30f;
 
-    private float xRotation = 0f;
-    private float yRotation = 0f;
-
-    private Vector2 currentMouseLook;
-    private Vector2 currentMouseDelta;
+    private Vector2 mouseDelta;
+    private Vector2 smoothMouse;
 
     void Start()
     {
@@ -24,36 +18,11 @@ public class TPVCamera : MonoBehaviour
 
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-        currentMouseDelta = new Vector2(mouseX, mouseY);
-        currentMouseLook = Vector2.Lerp(currentMouseLook, currentMouseLook + currentMouseDelta, Time.deltaTime * smoothing);
-
-        yRotation += currentMouseLook.x;
-        xRotation -= currentMouseLook.y;
-
-        xRotation = Mathf.Clamp(xRotation, lowerClamp, upperClamp);
-
-        freeLookCamera.m_XAxis.Value = yRotation;
-        freeLookCamera.m_YAxis.Value = xRotation;
-
-        HandleCameraCollision();
-    }
-
-    private void HandleCameraCollision()
-    {
-        Vector3 cameraPosition = freeLookCamera.transform.position;
-        Vector3 direction = cameraPosition - player.position;
-        RaycastHit hit;
-
-        if (Physics.Raycast(player.position, direction, out hit, direction.magnitude))
-        {
-            freeLookCamera.transform.position = hit.point;
-        }
-        else
-        {
-            freeLookCamera.transform.position = cameraPosition;
-        }
+        float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+        mouseDelta = Vector2.Lerp(mouseDelta, new Vector2(mouseX, mouseY), Time.deltaTime * smoothing);
+        freeLookCamera.m_XAxis.Value += mouseDelta.x;
+        freeLookCamera.m_YAxis.Value -= mouseDelta.y * 0.01f;
+        freeLookCamera.m_YAxis.Value = Mathf.Clamp01(freeLookCamera.m_YAxis.Value);
     }
 }
