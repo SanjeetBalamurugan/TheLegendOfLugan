@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -18,6 +20,8 @@ public class PlayerMove : MonoBehaviour
     public ItemScriptableObject item;
     public float pickableRadius = 2f;
     public LayerMask pickableLayerMask;
+    public Transform pickButtons;
+    public GameObject pickButtonPrefab;
 
     void Update()
     {
@@ -45,14 +49,8 @@ public class PlayerMove : MonoBehaviour
         foreach (var collider in pickableObjects)
         {
             ItemHandler handler = collider.GetComponent<ItemHandler>();
-
-            ItemManager.instance.AddInventoryItems(handler.GetItemData());
-            Destroy(collider.gameObject);
+            Instantiate(pickButtonPrefab, pickButtons);
         }
-        
-
-
-        
 
     }
 }

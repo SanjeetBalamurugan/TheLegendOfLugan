@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ItemHandler : MonoBehaviour
 {
-    public static ItemScriptableObject itemData;
+    public ItemScriptableObject itemData;
     
     public ItemScriptableObject GetItemData()
     {

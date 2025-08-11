@@ -17,4 +17,13 @@ public class ItemManager : MonoBehaviour
     {
         items.Add(item);
     }
+
+    public void PickUpItem(Collider pickObject)
+    {
+        ItemHandler handler = pickObject.GetComponent<ItemHandler>();
+
+        this.AddInventoryItems(handler.GetItemData());
+        Debug.Log(pickObject.name);
+        Destroy(pickObject.gameObject);
+    }
 }

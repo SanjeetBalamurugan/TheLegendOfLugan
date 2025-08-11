@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: March 7th
   type: 2
-  itemSprite: {fileID: 0}
+  itemSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   itemPrefab: {fileID: 4894985763398932870, guid: e3775ff3e702a2c4ea0393a8b78a4026,
     type: 3}
