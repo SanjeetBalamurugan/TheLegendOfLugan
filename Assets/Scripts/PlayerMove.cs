@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
+using System.Collections.Generic;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -17,11 +18,9 @@ public class PlayerMove : MonoBehaviour
     private bool isGrounded;
     private float gravity = -9.81f;
 
-    public ItemScriptableObject item;
+    private List<Collider> picked = new List<Collider>();
     public float pickableRadius = 2f;
     public LayerMask pickableLayerMask;
-    public Transform pickButtons;
-    public GameObject pickButtonPrefab;
 
     void Update()
     {
@@ -46,10 +45,24 @@ public class PlayerMove : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
         Collider[] pickableObjects = Physics.OverlapSphere(groundCheck.position, pickableRadius, pickableLayerMask);
-        foreach (var collider in pickableObjects)
+        if (picked.Count != 0)
         {
-            ItemHandler handler = collider.GetComponent<ItemHandler>();
-            Instantiate(pickButtonPrefab, pickButtons);
+            foreach (var gameObject in picked)
+            {
+                if (pickableObjects.Contains(gameObject.GetComponent<Collider>()))
+                {
+                    picked.Remove(gameObject);
+                }
+            }
+        } else
+        {
+            picked = pickableObjects.ToList();
+        }
+
+        foreach (var gameObject in picked)
+        {
+            ItemManager.instance.PickUpItem(gameObject.GetComponent<Collider>());
+            Debug.Log(gameObject.name);
         }
 
     }
