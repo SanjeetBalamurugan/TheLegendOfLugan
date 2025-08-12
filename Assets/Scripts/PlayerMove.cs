@@ -45,25 +45,18 @@ public class PlayerMove : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
         Collider[] pickableObjects = Physics.OverlapSphere(groundCheck.position, pickableRadius, pickableLayerMask);
-        if (picked.Count != 0)
+        List<Collider> currentPickables = new List<Collider>(pickableObjects);
+
+        foreach (var col in currentPickables)
         {
-            foreach (var gameObject in picked)
+            if (!picked.Contains(col))
             {
-                if (pickableObjects.Contains(gameObject.GetComponent<Collider>()))
-                {
-                    picked.Remove(gameObject);
-                }
+                picked.Add(col);
+                ItemManager.instance.PickUpItem(col);
+                Debug.Log(col.gameObject.name);
             }
-        } else
-        {
-            picked = pickableObjects.ToList();
         }
 
-        foreach (var gameObject in picked)
-        {
-            ItemManager.instance.PickUpItem(gameObject.GetComponent<Collider>());
-            Debug.Log(gameObject.name);
-        }
-
+        picked.RemoveAll(col => !currentPickables.Contains(col));
     }
 }
