@@ -33,13 +33,17 @@ public class ItemManager : MonoBehaviour
     }
 
     public void AfterPickUp(List<Collider> colliders)
+{
+    for (var i = 0; i < pickButtons.childCount; i++)
     {
-        for (var i = 0; i < pickButtons.childCount; i++)
+        Transform buttonTransform = pickButtons.GetChild(i);
+        Collider buttonCollider = buttonTransform.GetComponent<Collider>();
+
+        if (buttonCollider != null && colliders.Contains(buttonCollider))
         {
-            if (colliders.Contains(pickButtons.GetChild(i).GetComponent<Collider>()))
-            {
-                Destroy(pickButtons.GetChild(i));
-            }
+            Destroy(buttonTransform.gameObject);
         }
     }
+}
+
 }
