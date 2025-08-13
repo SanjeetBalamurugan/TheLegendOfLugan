@@ -58,5 +58,8 @@ public class PlayerMove : MonoBehaviour
         }
 
         picked.RemoveAll(col => !currentPickables.Contains(col));
+        ItemManager.instance.AfterPickUp(picked);
     }
+
+    public List<Collider> GetPicked() { return picked; }
 }
