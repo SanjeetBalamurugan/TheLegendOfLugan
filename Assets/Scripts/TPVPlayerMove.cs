@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TPVPlayerMove : MonoBehaviour
@@ -18,6 +17,8 @@ public class TPVPlayerMove : MonoBehaviour
     public Transform playerCamera;
     public float rotationSpeed = 10f;
 
+    public PlayerStateManager stateManager;
+
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -27,31 +28,44 @@ public class TPVPlayerMove : MonoBehaviour
             velocity.y = -2f;
         }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        Vector3 move = playerCamera.right * x + playerCamera.forward * z;
-        move.y = 0f;
-
-        if (move.magnitude > 1f)
-        {
-            move.Normalize();
-        }
-
-        controller.Move(move * moveSpeed * Time.deltaTime);
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        }
+        stateManager.CurrentState.HandleInput();
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-        if (move != Vector3.zero)
+        if (isGrounded && velocity.y < 0)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+            velocity.y = -2f;
+        }
+    }
+
+    public void UpdateMovement()
+    {
+        if (stateManager.CurrentState is MoveState)
+        {
+            float x = Input.GetAxis("Horizontal");
+            float z = Input.GetAxis("Vertical");
+
+            Vector3 move = playerCamera.right * x + playerCamera.forward * z;
+            move.y = 0f;
+
+            if (move.magnitude > 1f)
+            {
+                move.Normalize();
+            }
+
+            controller.Move(move * moveSpeed * Time.deltaTime);
+
+            if (move != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(move);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+            }
+
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
         }
     }
 }
