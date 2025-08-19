@@ -20,40 +20,40 @@ public class TPVPlayerMove : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        ApplyGravity(); // Apply gravity logic
+        ApplyGravity();
 
-        stateManager.CurrentState.HandleInput(); // Handle input based on state
+        stateManager.CurrentState.HandleInput();
 
-        controller.Move(velocity * Time.deltaTime); // Apply movement
+        controller.Move(velocity * Time.deltaTime);
     }
 
     private void ApplyGravity()
     {
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // Keep the player grounded
+            velocity.y = -2f;
         }
         else
         {
-            velocity.y += gravity * Time.deltaTime; // Apply gravity
+            velocity.y += gravity * Time.deltaTime;
         }
     }
 
     public void UpdateMovement()
     {
-        if (stateManager.CurrentState is MoveState) // Only handle movement in MoveState
+        if (stateManager.CurrentState is MoveState)
         {
             float x = Input.GetAxis("Horizontal");
             float z = Input.GetAxis("Vertical");
 
-            Vector3 move = new Vector3(x, 0, z); // Movement without camera direction
-            move.Normalize(); // Normalize to prevent faster diagonal movement
+            Vector3 move = new Vector3(x, 0, z);
+            move.Normalize();
 
             controller.Move(move * moveSpeed * Time.deltaTime);
 
             if (Input.GetButtonDown("Jump") && isGrounded)
             {
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jump
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             }
         }
     }
