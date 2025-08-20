@@ -1,0 +1,254 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!2058629511 &2058629511
+VisualEffectResource:
+  m_ObjectHideFlags: 0
+  m_Name: BarbaraBurst
+  m_Graph:
+    fileID: 114350483966674976
+  m_Infos:
+    m_RendererSettings:
+      motionVectorGenerationMode: 0
+      shadowCastingMode: 0
+      receiveShadows: 0
+      reflectionProbeUsage: 0
+      lightProbeUsage: 0
+    m_CullingFlags: 3
+    m_UpdateMode: 0
+    m_PreWarmDeltaTime: 0.016666668
+    m_PreWarmStepCount: 0
+    m_InitialEventName: OnPlay
+--- !u!114 &114350483966674976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d4c867f6b72b714dbb5fd1780afe208, type: 3}
+  m_Name: BarbaraBurstGraph
+  m_UIInfos: {fileID: 114340500867371532}
+  m_GraphVersion: 9
+  m_ResourceVersion: 1
+  m_ImportDependencies: []
+  m_SubgraphDependencies: []
+  m_CategoryPath: 
+  m_ParameterInfo:
+  - name: BurstDuration
+    path: BurstDuration
+    sheetType: m_Float
+    realType: Single
+    defaultValue:
+      m_Type: { m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 }
+      m_SerializableObject: 2.0
+    min: 0
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
+  - name: CircleRadius
+    path: CircleRadius
+    sheetType: m_Float
+    realType: Single
+    defaultValue:
+      m_Type: { m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 }
+      m_SerializableObject: 3.0
+    min: 0
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
+  - name: SpiralRate
+    path: SpiralRate
+    sheetType: m_Float
+    realType: Single
+    defaultValue:
+      m_Type: { m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 }
+      m_SerializableObject: 60
+    min: 0
+    max: Infinity
+  - name: SparkleRate
+    path: SparkleRate
+    sheetType: m_Float
+    realType: Single
+    defaultValue:
+      m_Type: { m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 }
+      m_SerializableObject: 40
+    min: 0
+    max: Infinity
+  - name: Seed
+    path: Seed
+    sheetType: m_Float
+    realType: Single
+    defaultValue:
+      m_Type: { m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 }
+      m_SerializableObject: 1
+    min: -Infinity
+    max: Infinity
+  m_UIPosition: {x: 0, y: 0}
+  m_UICollapsed: 0
+  m_UISuperCollapsed: 0
+  m_Children:
+  - {fileID: 114001000000000001}   # Spawner (Burst)
+  - {fileID: 114001000000000010}   # Init Spirals
+  - {fileID: 114001000000000020}   # Update Spirals
+  - {fileID: 114001000000000030}   # Output Spirals (strip)
+  - {fileID: 114001000000000040}   # Init Sparkles
+  - {fileID: 114001000000000050}   # Update Sparkles
+  - {fileID: 114001000000000060}   # Output Sparkles (quad)
+  - {fileID: 114001000000000070}   # Output Circle (quad)
+  - {fileID: 114001000000000080}   # Aura Pulse (quad)
+
+# --- Spawner: one-shot burst over BurstDuration
+--- !u!114 &114001000000000001
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 73a13919d81fb7444849bae8b5c812a2, type: 3}
+  m_Label: Burst Spawner
+  loopCount: 1
+  loopDuration: 0
+  delayBeforeLoop: 0
+  delayAfterLoop: 0
+  m_OutputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000010}  # into Spiral init
+      slotIndex: 0
+    - context: {fileID: 114001000000000040}  # into Sparkle init
+      slotIndex: 0
+    - context: {fileID: 114001000000000070}  # trigger circle output
+      slotIndex: 0
+    - context: {fileID: 114001000000000080}  # trigger aura pulse
+      slotIndex: 0
+  m_Data: {fileID: 114001000000000002}
+--- !u!114 &114001000000000002
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: f68759077adc0b143b6e1c101e82065e, type: 3}
+  title: SpawnerData
+  m_Owners: [ {fileID: 114001000000000001} ]
+
+# --- Spiral particles (ribbons/strips)
+--- !u!114 &114001000000000010
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 9dfea48843f53fc438eabc12a3a30abc, type: 3}
+  m_Label: Init Spirals
+  m_InputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000001}
+      slotIndex: 0
+  m_OutputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000020}
+      slotIndex: 0
+  m_Data: {fileID: 114001000000000011}
+--- !u!114 &114001000000000011
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: d78581a96eae8bf4398c282eb0b098bd, type: 3}
+  title: SpiralsData
+  dataType: 1
+  capacity: 256
+  stripCapacity: 64
+  particlePerStripCount: 16
+  needsComputeBounds: 1
+  boundsMode: 0
+  m_Space: 0
+--- !u!114 &114001000000000020
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 2dc095764ededfa4bb32fa602511ea4b, type: 3}
+  m_Label: Update Spirals
+  integration: 1
+  angularIntegration: 0
+  ageParticles: 1
+  reapParticles: 1
+  m_InputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000010}
+      slotIndex: 0
+  m_OutputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000030}
+      slotIndex: 0
+--- !u!114 &114001000000000030
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 0ed4ccad4c6f44dd97af1e3f1e0cf535, type: 3}
+  m_Label: Output Spirals (Strip Quad)
+  outputType: Strip
+  shaderGraph: {fileID: 11400000, guid: 0f1e2d3c4b5a69788796a5b4c3d2e1f0, type: 3}  # WaterSpiral.shadergraph
+  sort: 2
+  blendMode: 1
+  zWrite: 0
+
+# --- Sparkle particles (quads)
+--- !u!114 &114001000000000040
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 9dfea48843f53fc438eabc12a3a30abc, type: 3}
+  m_Label: Init Sparkles
+  m_InputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000001}
+      slotIndex: 0
+  m_OutputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000050}
+      slotIndex: 0
+  m_Data: {fileID: 114001000000000041}
+--- !u!114 &114001000000000041
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: d78581a96eae8bf4398c282eb0b098bd, type: 3}
+  title: SparklesData
+  dataType: 0
+  capacity: 256
+  needsComputeBounds: 1
+  boundsMode: 0
+  m_Space: 0
+--- !u!114 &114001000000000050
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 2dc095764ededfa4bb32fa602511ea4b, type: 3}
+  m_Label: Update Sparkles
+  integration: 0
+  angularIntegration: 0
+  ageParticles: 1
+  reapParticles: 1
+  m_InputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000040}
+      slotIndex: 0
+  m_OutputFlowSlot:
+  - link:
+    - context: {fileID: 114001000000000060}
+      slotIndex: 0
+--- !u!114 &114001000000000060
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 0ed4ccad4c6f44dd97af1e3f1e0cf535, type: 3}
+  m_Label: Output Sparkles (Quad)
+  outputType: Quad
+  shaderGraph: {fileID: 11400000, guid: c3e2d1f0a9b8c7d6e5f4a3b2c1d0e0f1, type: 3}  # Sparkle.shadergraph
+  sort: 3
+  blendMode: 1
+  zWrite: 0
+
+# --- Ground circle (quad)
+--- !u!114 &114001000000000070
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 0ed4ccad4c6f44dd97af1e3f1e0cf535, type: 3}
+  m_Label: Output Circle (Quad)
+  outputType: Quad
+  shaderGraph: {fileID: 11400000, guid: 9a1f2c3d4e5f6789ab0c1d2e3f405162, type: 3}  # HydroCircle.shadergraph
+  sort: 0
+  blendMode: 1
+  zWrite: 0
+
+# --- Aura pulse (expanding quad using same HydroCircle shader)
+--- !u!114 &114001000000000080
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: 0ed4ccad4c6f44dd97af1e3f1e0cf535, type: 3}
+  m_Label: Aura Pulse (Quad)
+  outputType: Quad
+  shaderGraph: {fileID: 11400000, guid: 9a1f2c3d4e5f6789ab0c1d2e3f405162, type: 3}
+  sort: 1
+  blendMode: 1
+  zWrite: 0
+
+# Editor UI bounds (optional)
+--- !u!114 &114340500867371532
+MonoBehaviour:
+  m_Script: {fileID: 11500000, guid: d01270efd3285ea4a9d6c555cb0a8027, type: 3}
+  m_Name: VFXUI
+  uiBounds:
+    serializedVersion: 2
+    x: 200
+    y: -200
+    width: 1200
+    height: 900
