@@ -1,0 +1,26 @@
+{
+  "m_SGVersion": 2,
+  "m_Type": "UnityEditor.ShaderGraph.GraphData",
+  "m_ObjectId": "7a9d1e59-0d3d-4691-a7a3-7b6b6f7f1a1f",
+  "m_Properties": [
+    {"m_Name":"_DistortionTex","m_Type":"Texture2D","m_DefaultReferenceName":"gray"},
+    {"m_Name":"_Color","m_Type":"Color","m_Value":{"r":0.25,"g":0.9,"b":1.0,"a":0.8}},
+    {"m_Name":"_Intensity","m_Type":"Vector1","m_Value":0.3},
+    {"m_Name":"_RotateSpeed","m_Type":"Vector1","m_Value":1.5}
+  ],
+  "m_Nodes": [
+    {"m_Type":"UVNode","m_ObjectId":"uv"},
+    {"m_Type":"TimeNode","m_ObjectId":"time"},
+    {"m_Type":"MultiplyNode","m_ObjectId":"rsMul","m_A":"time","m_B":"_RotateSpeed"},
+    {"m_Type":"RotateUVNode","m_ObjectId":"rot","m_UV":"uv","m_Radians":"rsMul","m_Pivot":"0.5,0.5"},
+    {"m_Type":"SampleTexture2DNode","m_ObjectId":"sample","m_Texture":"_DistortionTex","m_UV":"rot"},
+    {"m_Type":"SubtractNode","m_ObjectId":"centeroffset","m_A":"rot","m_B":"0.5,0.5"},
+    {"m_Type":"MultiplyNode","m_ObjectId":"uvOff","m_A":"centeroffset","m_B":"_Intensity"},
+    {"m_Type":"AddNode","m_ObjectId":"distortedUV","m_A":"rot","m_B":"uvOff"},
+    {"m_Type":"ColorNode","m_ObjectId":"col","m_Value":"_Color"},
+    {"m_Type":"MultiplyNode","m_ObjectId":"emit","m_A":"col","m_B":"sample"},
+    {"m_Type":"ShaderOutputNode","m_ObjectId":"out",
+     "m_SurfaceType":"Transparent","m_Blend":"Add","m_ZWrite":false,
+     "m_BaseColor":"emit","m_Alpha":"sample","m_Emission":"emit"}
+  ]
+}
