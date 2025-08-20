@@ -134,27 +134,34 @@ public class MoveState : IPlayerState
 public class CombatState : IPlayerState
 {
     private PlayerStateManager player;
+    private bool isAttacking;
 
     public void Enter(PlayerStateManager player)
     {
         this.player = player;
         player.GetAnimator().SetTrigger("Attack");
         player.GetCombatSystem().StartCombo();
+        isAttacking = true;
     }
 
-    public void Exit() {}
+    public void Exit()
+    {
+        isAttacking = false;
+    }
 
     public void Update() {}
 
     public void HandleInput()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && !isAttacking)
         {
             player.GetCombatSystem().LightAttack();
+            isAttacking = true;
         }
-        if (Input.GetButtonDown("Fire2"))
+        else if (Input.GetButtonDown("Fire2") && !isAttacking)
         {
             player.GetCombatSystem().HeavyAttack();
+            isAttacking = true;
         }
 
         if (player.GetAnimator().GetCurrentAnimatorStateInfo(0).IsName("AttackFinish"))
