@@ -2,17 +2,10 @@ using UnityEngine;
 
 public class PlayerStateManager : MonoBehaviour
 {
-    private IPlayerState currentState;
-    private Animator animator;
-    private TPVPlayerMove playerMove;
-    private CombatSystem combatSystem;
-
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-        playerMove = GetComponent<TPVPlayerMove>();
-        combatSystem = GetComponent<CombatSystem>();
-    }
+    public IPlayerState currentState;
+    public Animator animator;
+    public TPVPlayerMove playerMove;
+    public CombatSystem combatSystem;
 
     void Start()
     {
@@ -27,6 +20,7 @@ public class PlayerStateManager : MonoBehaviour
 
     public void SetState(IPlayerState newState)
     {
+        Debug.Log("ChangingState");
         currentState?.Exit();
         currentState = newState;
         currentState.Enter(this);

@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
-    public Animator animator;
+    private Animator animator;
+    private PlayerStateManager stateManager;
     public float lightAttackCooldown = 0.5f;
     public float heavyAttackCooldown = 1f;
 
     private bool canLightAttack = true;
     private bool canHeavyAttack = true;
 
-    void Start()
+    public void Start()
     {
-        animator = GetComponent<Animator>();
+        stateManager = GetComponent<PlayerStateManager>();
+        animator = stateManager.GetAnimator();
     }
 
     public void StartCombo()

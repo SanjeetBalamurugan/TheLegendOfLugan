@@ -14,15 +14,11 @@ public class TPVPlayerMove : MonoBehaviour
     private bool isGrounded;
     private float gravity = -9.81f;
 
-    public PlayerStateManager stateManager;
-
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         ApplyGravity();
-
-        stateManager.CurrentState.HandleInput();
 
         controller.Move(velocity * Time.deltaTime);
     }
@@ -36,25 +32,6 @@ public class TPVPlayerMove : MonoBehaviour
         else
         {
             velocity.y += gravity * Time.deltaTime;
-        }
-    }
-
-    public void UpdateMovement()
-    {
-        if (stateManager.CurrentState is MoveState)
-        {
-            float x = Input.GetAxis("Horizontal");
-            float z = Input.GetAxis("Vertical");
-
-            Vector3 move = new Vector3(x, 0, z);
-            move.Normalize();
-
-            controller.Move(move * moveSpeed * Time.deltaTime);
-
-            if (Input.GetButtonDown("Jump") && isGrounded)
-            {
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            }
         }
     }
 }

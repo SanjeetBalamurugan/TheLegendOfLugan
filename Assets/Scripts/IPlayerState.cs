@@ -1,3 +1,6 @@
+using System.Collections;
+using UnityEngine;
+
 public interface IPlayerState
 {
     void Enter(PlayerStateManager player);
@@ -14,16 +17,20 @@ public class IdleState : IPlayerState
     {
         this.player = player;
         player.GetAnimator().SetBool("IsMoving", false);
+        Debug.Log("Idle");
     }
 
     public void Exit() {}
 
-    public void Update() {}
+    public void Update() {
+        HandleInput();
+    }
 
     public void HandleInput()
     {
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
         {
+            Debug.Log("MoveStateChange");
             player.SetState(new MoveState());
         }
         if (Input.GetButtonDown("Fire1"))
@@ -44,10 +51,14 @@ public class MoveState : IPlayerState
     private float runningSmoothing = 0.03f;
     private bool shiftHeldBeforeMovement = false;
 
+    private TPVPlayerMove _PlayerMove;
+
     public void Enter(PlayerStateManager player)
     {
         this.player = player;
         player.animator.SetBool("IsMoving", true);
+        Debug.Log("Moving");
+        _PlayerMove = player.GetPlayerMove();
     }
 
     public void Exit()
@@ -57,6 +68,7 @@ public class MoveState : IPlayerState
 
     public void Update()
     {
+        Debug.Log("Moving");
         HandleMovementInput();
         UpdateAnimator();
         shiftHeldBeforeMovement = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
@@ -102,6 +114,8 @@ public class MoveState : IPlayerState
 
         currentX = Mathf.Lerp(currentX, targetX, currentSmoothing);
         currentY = Mathf.Lerp(currentY, targetY, currentSmoothing);
+
+        _PlayerMove.controller.Move(_PlayerMove.gameObject.transform.forward * currentY + _PlayerMove.gameObject.transform.right * currentX);
     }
 
     private void UpdateAnimator()
