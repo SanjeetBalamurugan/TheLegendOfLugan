@@ -49,15 +49,12 @@ public class MoveState : IPlayerState
     private float currentY = 0f;
     private float smoothing = 0.03f;
     private float runningSmoothing = 0.03f;
-    private bool shiftHeldBeforeMovement = false;
-
     private TPVPlayerMove _PlayerMove;
 
     public void Enter(PlayerStateManager player)
     {
         this.player = player;
         player.animator.SetBool("IsMoving", true);
-        Debug.Log("Moving");
         _PlayerMove = player.GetPlayerMove();
     }
 
@@ -68,10 +65,8 @@ public class MoveState : IPlayerState
 
     public void Update()
     {
-        Debug.Log("Moving");
         HandleMovementInput();
         UpdateAnimator();
-        shiftHeldBeforeMovement = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
     }
 
     public void HandleInput()
@@ -94,28 +89,37 @@ public class MoveState : IPlayerState
         targetX = 0f;
         targetY = 0f;
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            targetY = isRunning ? 1f : 0.5f;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            targetY = isRunning ? -1f : -0.5f;
-        }
+        if (Input.GetKey(KeyCode.W)) targetY = isRunning ? 1f : 0.5f;
+        else if (Input.GetKey(KeyCode.S)) targetY = isRunning ? -1f : -0.5f;
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            targetX = isRunning ? -1f : -0.5f;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            targetX = isRunning ? 1f : 0.5f;
-        }
+        if (Input.GetKey(KeyCode.A)) targetX = isRunning ? -1f : -0.5f;
+        else if (Input.GetKey(KeyCode.D)) targetX = isRunning ? 1f : 0.5f;
 
         currentX = Mathf.Lerp(currentX, targetX, currentSmoothing);
         currentY = Mathf.Lerp(currentY, targetY, currentSmoothing);
 
-        _PlayerMove.controller.Move(_PlayerMove.gameObject.transform.forward * currentY + _PlayerMove.gameObject.transform.right * currentX);
+        Vector3 forward = _PlayerMove.gameObject.transform.forward;
+        Vector3 right = _PlayerMove.gameObject.transform.right;
+
+        if (isRunning)
+        {
+            Vector3 moveDirection = forward * currentY + right * currentX;
+
+            if (currentY > 0)
+            {
+                _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime);
+                _PlayerMove.gameObject.transform.rotation = Quaternion.LookRotation(forward); // Face camera while running
+            }
+            else
+            {
+                _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime);
+            }
+        }
+        else
+        {
+            Vector3 moveDirection = forward * currentY + right * currentX;
+            _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * 0.5f * Time.deltaTime); // Slower when not running
+        }
     }
 
     private void UpdateAnimator()
@@ -124,6 +128,7 @@ public class MoveState : IPlayerState
         player.animator.SetFloat("y", currentY);
     }
 }
+
 
 
 public class CombatState : IPlayerState
