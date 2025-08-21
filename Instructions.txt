@@ -79,3 +79,24 @@ Bow Transitions:
   Has Exit Time: ✅
   Exit Time: 1
   Transition Duration: 0.2
+
+
+After adding models and combo anime:
+
+Claymore Combo Animation Events:
+- Combo1 animation:
+  Add event at the frame where the blade first makes contact → call DamageSystem.ApplyDamage()
+- Combo2 animation:
+  Add event at contact frame → call DamageSystem.ApplyDamage()
+- Combo3 animation:
+  Add event at contact frame → call DamageSystem.ApplyDamage()
+- Combo4 animation:
+  Add event at contact frame → call DamageSystem.ApplyDamage()
+- AttackFinish animation:
+  No damage event, just a recovery move
+
+Bow Animation Events:
+- BowAttack animation:
+  Add event at the moment the arrow releases → call DamageSystem.ApplyDamage()
+- BowRapidFire animation:
+  Add event at each arrow release → call DamageSystem.ApplyDamage()
