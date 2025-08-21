@@ -152,7 +152,7 @@ public class CombatState : IPlayerState
 
     public void Exit()
     {
-        player.GetAnimator().SetTrigger("Attack");
+        player.GetAnimator().ResetTrigger("Attack");
         isAttacking = false;
     }
 
@@ -171,10 +171,9 @@ public class CombatState : IPlayerState
             isAttacking = true;
         }
 
-        if (player.GetAnimator().GetCurrentAnimatorStateInfo(0).IsName("AttackFinish"))
+        if (player.GetAnimator().GetCurrentAnimatorStateInfo(0).IsName("AttackFinish") && !isAttacking)
         {
             player.SetState(new IdleState());
         }
     }
 }
-
