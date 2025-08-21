@@ -32,7 +32,7 @@ public class CombatSystem : MonoBehaviour
         }
         else
         {
-            StartCombo();  // Restart combo if the time is up
+            StartCombo();  // Restart combo if time is up
         }
     }
 
@@ -46,7 +46,6 @@ public class CombatSystem : MonoBehaviour
 
     public void Update()
     {
-        // Handle combo input
         if (Input.GetButtonDown("Fire1"))
         {
             HandleComboInput("Fire1");
