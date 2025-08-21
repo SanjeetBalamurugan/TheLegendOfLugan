@@ -15,12 +15,10 @@ public class PlayerStateManager : MonoBehaviour
     void Update()
     {
         currentState.Update();
-        currentState.HandleInput();
     }
 
     public void SetState(IPlayerState newState)
     {
-        Debug.Log("ChangingState");
         currentState?.Exit();
         currentState = newState;
         currentState.Enter(this);
