@@ -1,38 +1,59 @@
-public class CombatState : IPlayerState
+using UnityEngine;
+
+public class CombatSystem : MonoBehaviour
 {
-    private PlayerStateManager player;
-    private ClaymoreWeapon claymoreWeapon;
+    private BaseWeapon currentWeapon;
+    private string inputBuffer = "";
+    private float comboTimer = 0f;
+    private float comboTimeLimit = 0.5f;
 
-    public void Enter(PlayerStateManager player)
+    public void Initialize(BaseWeapon weapon)
     {
-        this.player = player;
-        claymoreWeapon = player.GetComponentInChildren<ClaymoreWeapon>();
-
-        claymoreWeapon.ResetCombo();
-        claymoreWeapon.CancelCombo();
+        currentWeapon = weapon;
     }
 
-    public void Exit()
+    public void SwitchWeapon(BaseWeapon newWeapon)
     {
-        claymoreWeapon.ResetCombo();
+        currentWeapon = newWeapon;
+    }
+
+    public void StartCombo()
+    {
+        comboTimer = comboTimeLimit;
+        currentWeapon.StartCombo();
+    }
+
+    public void HandleComboInput(string input)
+    {
+        if (comboTimer > 0)
+        {
+            comboTimer -= Time.deltaTime;
+            currentWeapon.HandleCombo(input);
+        }
+        else
+        {
+            StartCombo();  // Restart combo if the time is up
+        }
+    }
+
+    public void Attack()
+    {
+        if (currentWeapon != null)
+        {
+            currentWeapon.Attack();
+        }
     }
 
     public void Update()
     {
-        HandleInput();
-        claymoreWeapon.FinishCombo();
-    }
-
-    public void HandleInput()
-    {
+        // Handle combo input
         if (Input.GetButtonDown("Fire1"))
         {
-            claymoreWeapon.TryCombo();
+            HandleComboInput("Fire1");
         }
-
-        if (player.GetAnimator().GetCurrentAnimatorStateInfo(0).IsName("AttackFinish"))
+        else if (Input.GetButtonDown("Fire2"))
         {
-            player.SetState(new IdleState());
+            HandleComboInput("Fire2");
         }
     }
 }
