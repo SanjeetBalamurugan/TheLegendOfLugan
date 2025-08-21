@@ -3,9 +3,9 @@ using UnityEngine;
 public class CombatSystem : MonoBehaviour
 {
     private BaseWeapon currentWeapon;
-    private string inputBuffer = "";
     private float comboTimer = 0f;
     private float comboTimeLimit = 0.5f;
+    private string bufferedInput;
 
     public void Initialize(BaseWeapon weapon)
     {
@@ -20,39 +20,40 @@ public class CombatSystem : MonoBehaviour
     public void StartCombo()
     {
         comboTimer = comboTimeLimit;
-        currentWeapon.StartCombo();
+        currentWeapon?.StartCombo();
     }
 
     public void HandleComboInput(string input)
     {
-        if (comboTimer > 0)
+        if (comboTimer > 0f)
         {
-            comboTimer -= Time.deltaTime;
-            currentWeapon.HandleCombo(input);
+            currentWeapon?.HandleCombo(input);
+            comboTimer = comboTimeLimit;
         }
         else
         {
-            StartCombo();  // Restart combo if time is up
+            bufferedInput = input;
         }
     }
 
-    public void Attack()
+    public void Attack(string input)
     {
-        if (currentWeapon != null)
-        {
-            currentWeapon.Attack();
-        }
+        if (currentWeapon == null) return;
+        currentWeapon.Attack();
+        comboTimer = comboTimeLimit;
     }
 
-    public void Update()
+    void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (comboTimer > 0f)
         {
-            HandleComboInput("Fire1");
-        }
-        else if (Input.GetButtonDown("Fire2"))
-        {
-            HandleComboInput("Fire2");
+            comboTimer -= Time.deltaTime;
+            if (comboTimer <= 0f && !string.IsNullOrEmpty(bufferedInput))
+            {
+                currentWeapon?.HandleCombo(bufferedInput);
+                bufferedInput = null;
+                comboTimer = comboTimeLimit;
+            }
         }
     }
 }
