@@ -8,53 +8,93 @@ public abstract class BaseWeapon : MonoBehaviour
     public abstract void HandleCombo(string input);
 }
 
-public class ClaymoreWeapon : BaseWeapon
+public class ClaymoreWeapon : MonoBehaviour
 {
     private Animator animator;
-    private Weapon weapon;
-    private List<string> attackSequence = new List<string>();
-    private float comboTimeLimit = 1f;
-    private float comboTimer;
+    private int comboCount = 0;
+    private bool isAttacking = false;
+    private float comboTimer = 0f;
+    private float comboTimeLimit = 0.5f;
+    private float attackCooldown = 0.1f;
+    private float attackCooldownTimer = 0f;
+    private bool canChainCombo = true;
 
-    public void Initialize(Weapon weapon, Animator animator)
+    private string[] comboAnimations = new string[]
     {
-        this.weapon = weapon;
-        this.animator = animator;
+        "ClaymoreAttack_Combo1",
+        "ClaymoreAttack_Combo2",
+        "ClaymoreAttack_Combo3",
+        "ClaymoreAttack_Combo4"
+    };
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
     }
 
-    public override void Attack()
+    public void TryCombo()
     {
-        animator.SetTrigger(weapon.attackAnimationTrigger);
-        attackSequence.Add("Attack");
-        comboTimer = comboTimeLimit;
+        if (isAttacking || !canChainCombo) return;
+
+        if (comboCount < 4)
+        {
+            comboCount++;
+            string attackTrigger = comboAnimations[comboCount - 1];
+            animator.SetTrigger(attackTrigger);
+
+            comboTimer = comboTimeLimit;
+            attackCooldownTimer = attackCooldown;
+
+            StartCoroutine(ComboCooldown());
+        }
+        else
+        {
+            ResetCombo();
+        }
     }
 
-    public override void StartCombo()
+    private IEnumerator ComboCooldown()
     {
-        attackSequence.Clear();
-        comboTimer = 0;
+        canChainCombo = false;
+        yield return new WaitForSeconds(attackCooldown);
+        canChainCombo = true;
     }
 
-    public override void HandleCombo(string input)
+    public void FinishCombo()
     {
-        if (comboTimer > 0) comboTimer -= Time.deltaTime;
-
-        if (comboTimer <= 0)
+        if (comboTimer > 0)
         {
-            attackSequence.Clear();
+            comboTimer -= Time.deltaTime;
+        }
+        else
+        {
+            ResetCombo();
         }
 
-        if (input == "Light")
+        if (attackCooldownTimer > 0)
         {
-            attackSequence.Add("Light");
+            attackCooldownTimer -= Time.deltaTime;
         }
-        else if (input == "Heavy" && attackSequence.Count >= 2 && attackSequence[0] == "Light" && attackSequence[1] == "Light")
-        {
-            animator.SetTrigger("HeavyCombo");
-            attackSequence.Clear();
-        }
+    }
+
+    private void ResetCombo()
+    {
+        comboCount = 0;
+        canChainCombo = true;
+        isAttacking = false;
+    }
+
+    public void CancelCombo()
+    {
+        ResetCombo();
+    }
+
+    public void SetAnimator(Animator newAnimator)
+    {
+        animator = newAnimator;
     }
 }
+
 
 public class BowWeapon : BaseWeapon
 {
