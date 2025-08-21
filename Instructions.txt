@@ -1,0 +1,81 @@
+Parameters:
+- Float x
+- Float y
+- Bool IsMoving
+- Trigger ClaymoreAttack_Combo1
+- Trigger ClaymoreAttack_Combo2
+- Trigger ClaymoreAttack_Combo3
+- Trigger ClaymoreAttack_Combo4
+- Trigger BowAttack
+- Trigger BowRapidFire
+
+States:
+- Locomotion (Blend Tree using x, y with IsMoving)
+- ClaymoreAttack_Combo1
+- ClaymoreAttack_Combo2
+- ClaymoreAttack_Combo3
+- ClaymoreAttack_Combo4
+- AttackFinish
+- BowAttack
+- BowRapidFire
+
+Transitions:
+
+Locomotion:
+- Blend Tree handles idle/walk/run with x,y
+- No direct transitions needed besides attack states
+
+Claymore Combo Transitions:
+- Any State → ClaymoreAttack_Combo1:
+  Has Exit Time: ❌
+  Transition Duration: 0
+  Condition: ClaymoreAttack_Combo1
+
+- ClaymoreAttack_Combo1 → ClaymoreAttack_Combo2:
+  Has Exit Time: ✅
+  Exit Time: 0.8
+  Transition Duration: 0.05
+  Condition: ClaymoreAttack_Combo2
+
+- ClaymoreAttack_Combo2 → ClaymoreAttack_Combo3:
+  Has Exit Time: ✅
+  Exit Time: 0.8
+  Transition Duration: 0.05
+  Condition: ClaymoreAttack_Combo3
+
+- ClaymoreAttack_Combo3 → ClaymoreAttack_Combo4:
+  Has Exit Time: ✅
+  Exit Time: 0.8
+  Transition Duration: 0.05
+  Condition: ClaymoreAttack_Combo4
+
+- ClaymoreAttack_Combo4 → AttackFinish:
+  Has Exit Time: ✅
+  Exit Time: 1
+  Transition Duration: 0.1
+
+- AttackFinish → Locomotion:
+  Has Exit Time: ✅
+  Exit Time: 1
+  Transition Duration: 0.2
+
+Bow Transitions:
+- Any State → BowAttack:
+  Has Exit Time: ❌
+  Transition Duration: 0.05
+  Condition: BowAttack
+
+- BowAttack → Locomotion:
+  Has Exit Time: ✅
+  Exit Time: 1
+  Transition Duration: 0.2
+
+- Any State → BowRapidFire:
+  Has Exit Time: ❌
+  Transition Duration: 0.05
+  Condition: BowRapidFire
+
+- BowRapidFire → Locomotion:
+  Has Exit Time: ✅
+  Exit Time: 1
+  Transition Duration: 0.2
