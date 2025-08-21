@@ -7,10 +7,12 @@ public class PlayerWeaponManager : MonoBehaviour
     private Animator animator;
     private float cooldownTime = 1f;
     private float timeUntilNextSwitch = 0f;
+    private CombatSystem combatSystem;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        combatSystem = GetComponent<CombatSystem>();
         EquipWeapon(0);
     }
 
@@ -30,12 +32,12 @@ public class PlayerWeaponManager : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1"))
         {
-            currentWeapon?.HandleCombo("Light");
+            combatSystem.HandleComboInput("Fire1");
             animator.SetTrigger("LightAttack");
         }
         else if (Input.GetButtonDown("Fire2"))
         {
-            currentWeapon?.HandleCombo("Heavy");
+            combatSystem.HandleComboInput("Fire2");
             animator.SetTrigger("HeavyAttack");
         }
     }
@@ -48,22 +50,26 @@ public class PlayerWeaponManager : MonoBehaviour
         {
             Weapon selectedWeapon = weaponSlots[slotIndex];
 
+            if (currentWeapon != null)
+            {
+                Destroy(currentWeapon);
+            }
+
             if (selectedWeapon.weaponType == WeaponType.Claymore)
             {
-                currentWeapon = gameObject.AddComponent<ClaymoreWeapon>();
-                ((ClaymoreWeapon)currentWeapon).Initialize(selectedWeapon, animator);
+                currentWeapon = new ClaymoreWeapon();
             }
             else if (selectedWeapon.weaponType == WeaponType.Bow)
             {
-                currentWeapon = gameObject.AddComponent<BowWeapon>();
-                ((BowWeapon)currentWeapon).Initialize(selectedWeapon, animator);
+                currentWeapon = new BowWeapon();
             }
             else
             {
-                currentWeapon = gameObject.AddComponent<SwordWeapon>();
-                ((SwordWeapon)currentWeapon).Initialize(selectedWeapon, animator);
+                currentWeapon = new SwordWeapon();
             }
 
+            currentWeapon.Initialize(selectedWeapon, animator);
+            combatSystem.Initialize(currentWeapon);
             animator.SetInteger("WeaponType", (int)selectedWeapon.weaponType);
             timeUntilNextSwitch = cooldownTime;
         }
