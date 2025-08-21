@@ -1074,6 +1074,9 @@ VisualEffect:
       - m_Value: 25
         m_Name: spinspeed
         m_Overridden: 1
+      - m_Value: 2
+        m_Name: vornoipower
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
