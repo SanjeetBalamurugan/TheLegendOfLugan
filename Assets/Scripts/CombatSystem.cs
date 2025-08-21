@@ -1,34 +1,38 @@
-using UnityEngine;
-
-public class CombatSystem : MonoBehaviour
+public class CombatState : IPlayerState
 {
-    private Animator animator;
-    private PlayerWeaponManager weaponManager;
+    private PlayerStateManager player;
+    private ClaymoreWeapon claymoreWeapon;
 
-    void Start()
+    public void Enter(PlayerStateManager player)
     {
-        weaponManager = GetComponent<PlayerWeaponManager>();
-        animator = weaponManager.GetComponent<Animator>();
+        this.player = player;
+        claymoreWeapon = player.GetComponentInChildren<ClaymoreWeapon>();
+
+        claymoreWeapon.ResetCombo();
+        claymoreWeapon.CancelCombo();
     }
 
-    void Update()
+    public void Exit()
     {
-        if (Input.GetButtonDown("Fire1")) 
+        claymoreWeapon.ResetCombo();
+    }
+
+    public void Update()
+    {
+        HandleInput();
+        claymoreWeapon.FinishCombo();
+    }
+
+    public void HandleInput()
+    {
+        if (Input.GetButtonDown("Fire1"))
         {
-            animator.SetTrigger("LightAttack");
+            claymoreWeapon.TryCombo();
         }
 
-        if (Input.GetButtonDown("Fire2")) 
+        if (player.GetAnimator().GetCurrentAnimatorStateInfo(0).IsName("AttackFinish"))
         {
-            animator.SetTrigger("HeavyAttack");
+            player.SetState(new IdleState());
         }
-    }
-
-    public void StartCombo()
-    {
-    }
-
-    public void ResetCombo()
-    {
     }
 }
