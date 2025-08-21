@@ -1,5 +1,5 @@
+using System.Collections;
 using UnityEngine;
-using System.Collections.Generic;
 
 public abstract class BaseWeapon : MonoBehaviour
 {
@@ -11,15 +11,14 @@ public abstract class BaseWeapon : MonoBehaviour
 public class ClaymoreWeapon : BaseWeapon
 {
     private Animator animator;
-    private int comboCount = 0;
+    private int comboIndex = 0;
     private bool isAttacking = false;
     private float comboTimer = 0f;
     private float comboTimeLimit = 0.5f;
-    private float attackCooldown = 0.1f;
-    private float attackCooldownTimer = 0f;
-    private bool canChainCombo = true;
+    private bool canChain = true;
+    private float chainCooldown = 0.1f;
 
-    private string[] comboAnimations = new string[]
+    [SerializeField] private string[] comboAnimations = new string[]
     {
         "ClaymoreAttack_Combo1",
         "ClaymoreAttack_Combo2",
@@ -27,112 +26,112 @@ public class ClaymoreWeapon : BaseWeapon
         "ClaymoreAttack_Combo4"
     };
 
-    private void Awake()
+    void Awake()
     {
         animator = GetComponent<Animator>();
     }
 
-    public override void Attack()
-    {
-        if (!isAttacking)
-        {
-            isAttacking = true;
-            animator.SetTrigger(comboAnimations[comboCount]);
-            comboTimer = comboTimeLimit;
-            attackCooldownTimer = attackCooldown;
-            StartCoroutine(ComboCooldown());
-        }
-    }
-
-    public override void StartCombo()
-    {
-        comboCount = 0;
-        isAttacking = false;
-    }
-
-    public override void HandleCombo(string input)
+    void Update()
     {
         if (comboTimer > 0f)
         {
             comboTimer -= Time.deltaTime;
+            if (comboTimer <= 0f) ResetCombo();
         }
-        else
-        {
-            ResetCombo();
-        }
-
-        if (attackCooldownTimer > 0f)
-        {
-            attackCooldownTimer -= Time.deltaTime;
-        }
-
-        if (input == "Fire1" && canChainCombo)
-        {
-            TryCombo();
-        }
-    }
-
-    private void TryCombo()
-    {
-        if (isAttacking || !canChainCombo) return;
-
-        if (comboCount < 4)
-        {
-            comboCount++;
-            string attackTrigger = comboAnimations[comboCount - 1];
-            animator.SetTrigger(attackTrigger);
-            comboTimer = comboTimeLimit;
-            attackCooldownTimer = attackCooldown;
-            StartCoroutine(ComboCooldown());
-        }
-        else
-        {
-            ResetCombo();
-        }
-    }
-
-    private IEnumerator ComboCooldown()
-    {
-        canChainCombo = false;
-        yield return new WaitForSeconds(attackCooldown);
-        canChainCombo = true;
-    }
-
-    private void ResetCombo()
-    {
-        comboCount = 0;
-        isAttacking = false;
-        canChainCombo = true;
-    }
-}
-
-
-public class BowWeapon : BaseWeapon
-{
-    private Animator animator;
-    private Weapon weapon;
-
-    public void Initialize(Weapon weapon, Animator animator)
-    {
-        this.weapon = weapon;
-        this.animator = animator;
     }
 
     public override void Attack()
     {
-        animator.SetTrigger(weapon.attackAnimationTrigger);
+        if (isAttacking || !canChain) return;
+        PlayNext();
     }
 
     public override void StartCombo()
     {
+        comboIndex = 0;
+        isAttacking = false;
+        canChain = true;
+        comboTimer = 0f;
     }
 
     public override void HandleCombo(string input)
     {
-        if (input == "Fire1")
+        if (input != "Fire1") return;
+        if (!isAttacking && canChain)
         {
-            animator.SetTrigger("BowRapidFire");
+            PlayNext();
         }
+    }
+
+    private void PlayNext()
+    {
+        if (comboIndex >= comboAnimations.Length)
+        {
+            ResetCombo();
+            return;
+        }
+        animator.SetTrigger(comboAnimations[comboIndex]);
+        comboIndex++;
+        isAttacking = true;
+        comboTimer = comboTimeLimit;
+        StartCoroutine(ChainWindow());
+    }
+
+    private IEnumerator ChainWindow()
+    {
+        canChain = false;
+        yield return new WaitForSeconds(chainCooldown);
+        canChain = true;
+        isAttacking = false;
+    }
+
+    private void ResetCombo()
+    {
+        comboIndex = 0;
+        isAttacking = false;
+        canChain = true;
+        comboTimer = 0f;
     }
 }
 
+public class BowWeapon : BaseWeapon
+{
+    private Animator animator;
+    [SerializeField] private string attackTrigger = "BowAttack";
+    [SerializeField] private string rapidTrigger = "BowRapidFire";
+    [SerializeField] private float fireCooldown = 0.15f;
+    private float cd;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        if (cd > 0f) cd -= Time.deltaTime;
+    }
+
+    public void Initialize(Animator anim)
+    {
+        animator = anim;
+    }
+
+    public override void Attack()
+    {
+        if (cd > 0f) return;
+        animator.SetTrigger(attackTrigger);
+        cd = fireCooldown;
+    }
+
+    public override void StartCombo() {}
+
+    public override void HandleCombo(string input)
+    {
+        if (input == "Fire1" && cd <= 0f)
+        {
+            animator.SetTrigger(rapidTrigger);
+            cd = fireCooldown;
+        }
+    }
+}
