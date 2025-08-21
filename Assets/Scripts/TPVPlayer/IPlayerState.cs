@@ -114,7 +114,7 @@ public class MoveState : IPlayerState
             if (currentY > 0)
             {
                 _PlayerMove.controller.Move(moveDirection * _PlayerMove.runSpeed * Time.deltaTime);
-                _PlayerMove.gameObject.transform.rotation = Quaternion.LookRotation(forward); // Face camera while running
+                _PlayerMove.gameObject.transform.rotation = Quaternion.LookRotation(forward);
             }
             else
             {
@@ -124,7 +124,7 @@ public class MoveState : IPlayerState
         else
         {
             Vector3 moveDirection = forward * currentY + right * currentX;
-            _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime); // Slower when not running
+            _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime);
         }
     }
 
