@@ -8,7 +8,7 @@ public abstract class BaseWeapon : MonoBehaviour
     public abstract void HandleCombo(string input);
 }
 
-public class ClaymoreWeapon : MonoBehaviour
+public class ClaymoreWeapon : BaseWeapon
 {
     private Animator animator;
     private int comboCount = 0;
@@ -32,7 +32,47 @@ public class ClaymoreWeapon : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void TryCombo()
+    public override void Attack()
+    {
+        if (!isAttacking)
+        {
+            isAttacking = true;
+            animator.SetTrigger(comboAnimations[comboCount]);
+            comboTimer = comboTimeLimit;
+            attackCooldownTimer = attackCooldown;
+            StartCoroutine(ComboCooldown());
+        }
+    }
+
+    public override void StartCombo()
+    {
+        comboCount = 0;
+        isAttacking = false;
+    }
+
+    public override void HandleCombo(string input)
+    {
+        if (comboTimer > 0f)
+        {
+            comboTimer -= Time.deltaTime;
+        }
+        else
+        {
+            ResetCombo();
+        }
+
+        if (attackCooldownTimer > 0f)
+        {
+            attackCooldownTimer -= Time.deltaTime;
+        }
+
+        if (input == "Fire1" && canChainCombo)
+        {
+            TryCombo();
+        }
+    }
+
+    private void TryCombo()
     {
         if (isAttacking || !canChainCombo) return;
 
@@ -41,10 +81,8 @@ public class ClaymoreWeapon : MonoBehaviour
             comboCount++;
             string attackTrigger = comboAnimations[comboCount - 1];
             animator.SetTrigger(attackTrigger);
-
             comboTimer = comboTimeLimit;
             attackCooldownTimer = attackCooldown;
-
             StartCoroutine(ComboCooldown());
         }
         else
@@ -60,38 +98,11 @@ public class ClaymoreWeapon : MonoBehaviour
         canChainCombo = true;
     }
 
-    public void FinishCombo()
-    {
-        if (comboTimer > 0)
-        {
-            comboTimer -= Time.deltaTime;
-        }
-        else
-        {
-            ResetCombo();
-        }
-
-        if (attackCooldownTimer > 0)
-        {
-            attackCooldownTimer -= Time.deltaTime;
-        }
-    }
-
     private void ResetCombo()
     {
         comboCount = 0;
-        canChainCombo = true;
         isAttacking = false;
-    }
-
-    public void CancelCombo()
-    {
-        ResetCombo();
-    }
-
-    public void SetAnimator(Animator newAnimator)
-    {
-        animator = newAnimator;
+        canChainCombo = true;
     }
 }
 
