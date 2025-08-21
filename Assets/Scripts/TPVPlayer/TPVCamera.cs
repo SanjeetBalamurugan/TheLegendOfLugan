@@ -25,9 +25,9 @@ public class TPVCamera : MonoBehaviour
 
         mouseDelta = Vector2.Lerp(mouseDelta, new Vector2(mouseX, mouseY), Time.deltaTime * smoothing);
 
-        freeLookCamera.m_XAxis.Value += mouseDelta.x;
+        freeLookCamera.m_XAxis.Value += -mouseDelta.x;
         freeLookCamera.m_YAxis.Value -= mouseDelta.y * 0.01f;
 
-        freeLookCamera.m_YAxis.Value = Mathf.Clamp(freeLookCamera.m_YAxis.Value, verticalClampMin, verticalClampMax);
+        freeLookCamera.m_YAxis.Value = -Mathf.Clamp(freeLookCamera.m_YAxis.Value, verticalClampMin, verticalClampMax);
     }
 }

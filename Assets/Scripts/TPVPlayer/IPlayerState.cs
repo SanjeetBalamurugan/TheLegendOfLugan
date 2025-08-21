@@ -100,25 +100,31 @@ public class MoveState : IPlayerState
 
         Vector3 forward = _PlayerMove.gameObject.transform.forward;
         Vector3 right = _PlayerMove.gameObject.transform.right;
+        float jUP = 0;
+
+        if (Input.GetButtonDown("Jump") && _PlayerMove.IsGrounded())
+        {
+            jUP = Mathf.Sqrt(_PlayerMove.jumpHeight * -2f * _PlayerMove.GetGravity());
+        }
 
         if (isRunning)
         {
-            Vector3 moveDirection = forward * currentY + right * currentX;
+            Vector3 moveDirection = forward * currentY + right * currentX + jUP * _PlayerMove.gameObject.transform.up;
 
             if (currentY > 0)
             {
-                _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime);
+                _PlayerMove.controller.Move(moveDirection * _PlayerMove.runSpeed * Time.deltaTime);
                 _PlayerMove.gameObject.transform.rotation = Quaternion.LookRotation(forward); // Face camera while running
             }
             else
             {
-                _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime);
+                _PlayerMove.controller.Move(moveDirection * _PlayerMove.runSpeed * Time.deltaTime);
             }
         }
         else
         {
             Vector3 moveDirection = forward * currentY + right * currentX;
-            _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * 0.5f * Time.deltaTime); // Slower when not running
+            _PlayerMove.controller.Move(moveDirection * _PlayerMove.moveSpeed * Time.deltaTime); // Slower when not running
         }
     }
 
@@ -146,6 +152,7 @@ public class CombatState : IPlayerState
 
     public void Exit()
     {
+        player.GetAnimator().SetTrigger("Attack");
         isAttacking = false;
     }
 

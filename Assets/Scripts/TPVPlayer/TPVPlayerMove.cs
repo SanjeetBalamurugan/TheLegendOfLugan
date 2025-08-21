@@ -5,7 +5,9 @@ public class TPVPlayerMove : MonoBehaviour
 {
     public CharacterController controller;
     public float moveSpeed = 5f;
+    public float runSpeed = 5f;
     public float jumpHeight = 2f;
+
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
@@ -34,4 +36,7 @@ public class TPVPlayerMove : MonoBehaviour
             velocity.y += gravity * Time.deltaTime;
         }
     }
+
+    public bool IsGrounded() => isGrounded;
+    public float GetGravity() => gravity;
 }
