@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class TPVPlayerMove : MonoBehaviour
@@ -6,8 +5,10 @@ public class TPVPlayerMove : MonoBehaviour
     [Header("Player Movement")]
     public CharacterController controller;
     public float moveSpeed = 5f;
-    public float runSpeed = 5f;
-    public float jumpHeight = 2f;
+    public float runSpeed = 8f;
+    public float turnSmoothTime = 0.1f;
+    float turnSmoothVelocity;
+    public Transform cam;
 
     [Header("Player GroundCheck")]
     public Transform groundCheck;
@@ -18,35 +19,13 @@ public class TPVPlayerMove : MonoBehaviour
     private bool isGrounded;
     private float gravity = -9.81f;
 
-    [Header("The Character Animator")]
-    [SerializeField]
-    private Animator animator;
-
-    [Header("Animator Setup")]
-    [SerializeField]
-    private float smoothing = 0.03f; 
-    [SerializeField]
-    private float runningSmoothing = 0.03f; 
-
-    private float targetX = 0f;
-    private float targetY = 0f;
-
-    private float currentX = 0f;
-    private float currentY = 0f;
-
-    private bool shiftHeldBeforeMovement = false;
-
     void Update()
     {
-        targetX = 0f;
-        targetY = 0f;
-
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        float currentSmoothing = isRunning ? runningSmoothing : smoothing;
 
         ApplyGravity();
-        HandleMovement(isRunning, currentSmoothing);
+        HandleMovement(isRunning);
 
         controller.Move(velocity * Time.deltaTime);
     }
@@ -63,29 +42,24 @@ public class TPVPlayerMove : MonoBehaviour
         }
     }
 
-    private void HandleMovement(bool isRunning, float currentSmoothing)
+    private void HandleMovement(bool isRunning)
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            animator.Play("Player_WalkForward");
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            targetY = isRunning ? -1f : -0.5f;
-        }
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            targetX = isRunning ? -1f : -0.5f;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            targetX = isRunning ? 1f : 0.5f;
-        }
+        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        Debug.Log(currentX);
+        if (direction.magnitude >= 0.1f)
+        {
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-        shiftHeldBeforeMovement = isRunning && Input.GetKey(KeyCode.W);
+            float speed = isRunning ? runSpeed : moveSpeed;
+
+            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            controller.Move(moveDir.normalized * speed * Time.deltaTime);
+        }
     }
 
     public bool IsGrounded() => isGrounded;
