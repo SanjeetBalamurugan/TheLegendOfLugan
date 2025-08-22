@@ -1,102 +1,15 @@
-Parameters:
-- Float x
-- Float y
-- Bool IsMoving
-- Trigger ClaymoreAttack_Combo1
-- Trigger ClaymoreAttack_Combo2
-- Trigger ClaymoreAttack_Combo3
-- Trigger ClaymoreAttack_Combo4
-- Trigger BowAttack
-- Trigger BowRapidFire
+**Prompt for Puzzle Design in GameDev:**
 
-States:
-- Locomotion (Blend Tree using x, y with IsMoving)
-- ClaymoreAttack_Combo1
-- ClaymoreAttack_Combo2
-- ClaymoreAttack_Combo3
-- ClaymoreAttack_Combo4
-- AttackFinish
-- BowAttack
-- BowRapidFire
+I’m designing a puzzle game for a competition with the theme “Chain Reaction.” The game features a sequence of puzzles based on cause-and-effect where players must trigger events in the correct order to solve logic or physics-based challenges. Each reaction leads to the next in a fun and engaging way.
 
-Transitions:
+The game’s narrative involves an MC (main character) who enters a ruined ancient portal seeking a powerful artifact. After entering, the MC meets a girl who provides a device to solve ancient puzzles and a bow that shoots elemental arrows. The first 5 levels take place near the temple, and the next 5 levels are set inside a heavily Mayan-inspired temple.
 
-Locomotion:
-- Blend Tree handles idle/walk/run with x,y
-- No direct transitions needed besides attack states
+I need puzzle ideas for these 10 levels. The puzzles should incorporate:
+- Cause-and-effect mechanics.
+- Elemental interactions (fire, water, earth, air, etc.).
+- Sequential actions where players need to think critically about the order of events.
+- Interactivity with the environment (moving objects, triggering mechanisms, etc.).
 
-Claymore Combo Transitions:
-- Any State → ClaymoreAttack_Combo1:
-  Has Exit Time: ❌
-  Transition Duration: 0
-  Condition: ClaymoreAttack_Combo1
+The setting for the first 5 levels is an ancient, mystical area near the temple ruins, while the last 5 levels occur within the temple itself. The puzzles should increase in complexity as the game progresses, with some involving physics and logic-based solutions.
 
-- ClaymoreAttack_Combo1 → ClaymoreAttack_Combo2:
-  Has Exit Time: ✅
-  Exit Time: 0.8
-  Transition Duration: 0.05
-  Condition: ClaymoreAttack_Combo2
-
-- ClaymoreAttack_Combo2 → ClaymoreAttack_Combo3:
-  Has Exit Time: ✅
-  Exit Time: 0.8
-  Transition Duration: 0.05
-  Condition: ClaymoreAttack_Combo3
-
-- ClaymoreAttack_Combo3 → ClaymoreAttack_Combo4:
-  Has Exit Time: ✅
-  Exit Time: 0.8
-  Transition Duration: 0.05
-  Condition: ClaymoreAttack_Combo4
-
-- ClaymoreAttack_Combo4 → AttackFinish:
-  Has Exit Time: ✅
-  Exit Time: 1
-  Transition Duration: 0.1
-
-- AttackFinish → Locomotion:
-  Has Exit Time: ✅
-  Exit Time: 1
-  Transition Duration: 0.2
-
-Bow Transitions:
-- Any State → BowAttack:
-  Has Exit Time: ❌
-  Transition Duration: 0.05
-  Condition: BowAttack
-
-- BowAttack → Locomotion:
-  Has Exit Time: ✅
-  Exit Time: 1
-  Transition Duration: 0.2
-
-- Any State → BowRapidFire:
-  Has Exit Time: ❌
-  Transition Duration: 0.05
-  Condition: BowRapidFire
-
-- BowRapidFire → Locomotion:
-  Has Exit Time: ✅
-  Exit Time: 1
-  Transition Duration: 0.2
-
-
-After adding models and combo anime:
-
-Claymore Combo Animation Events:
-- Combo1 animation:
-  Add event at the frame where the blade first makes contact → call DamageSystem.ApplyDamage()
-- Combo2 animation:
-  Add event at contact frame → call DamageSystem.ApplyDamage()
-- Combo3 animation:
-  Add event at contact frame → call DamageSystem.ApplyDamage()
-- Combo4 animation:
-  Add event at contact frame → call DamageSystem.ApplyDamage()
-- AttackFinish animation:
-  No damage event, just a recovery move
-
-Bow Animation Events:
-- BowAttack animation:
-  Add event at the moment the arrow releases → call DamageSystem.ApplyDamage()
-- BowRapidFire animation:
-  Add event at each arrow release → call DamageSystem.ApplyDamage()
+Can you suggest specific puzzle ideas, including potential mechanics and ways to use the environment, the elemental bow, and the ancient device to solve the challenges?
