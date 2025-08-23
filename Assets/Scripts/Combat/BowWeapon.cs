@@ -3,116 +3,87 @@ using UnityEngine;
 public class BowWeapon : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform arrowSpawnPoint;
-    [SerializeField] private GameObject physicalArrowPrefab;
-    [SerializeField] private GameObject pyroArrowPrefab;
-    [SerializeField] private GameObject hydroArrowPrefab;
-    [SerializeField] private TPVPlayerMove player;
-    [SerializeField] private GameObject chargePlane;
-    [SerializeField] private string emissionProperty = "_EmissionFactor";
+    [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private TPVPlayerCombat combat;
 
-    [Header("Bow Settings")]
-    public float maxChargeTime = 2f;
-    public float minShootForce = 10f;
-    public float maxShootForce = 40f;
+    [Header("Arrow Settings")]
+    [SerializeField] private float arrowSpeed = 30f;
+    [SerializeField] private float maxChargeTime = 2f;
 
-    private float currentChargeTime;
+    private bool isAiming;
     private bool isCharging;
-    private bool isFullyCharged;
-    private GameObject currentArrow;
-    private Material chargePlaneMat;
+    private float chargeTime;
 
-    void Start()
+    private void Update()
     {
-        if (chargePlane != null)
-        {
-            chargePlane.SetActive(false);
-            chargePlaneMat = chargePlane.GetComponent<Renderer>().material;
-        }
-    }
+        isAiming = Input.GetMouseButton(1);
 
-    public void HandleCombat(TPVPlayerCombat.ArrowType arrowType)
-    {
-        if (player != null && player.IsAiming)
+        if (isAiming)
         {
-            if (!isCharging) StartCharging(arrowType);
-            ChargeArrow();
+            if (Input.GetMouseButtonDown(0))
+            {
+                isCharging = true;
+                chargeTime = 0f;
+            }
+
+            if (isCharging)
+            {
+                chargeTime += Time.deltaTime;
+                chargeTime = Mathf.Min(chargeTime, maxChargeTime);
+            }
+
+            if (Input.GetMouseButtonUp(0) && isCharging)
+            {
+                TryFireArrow();
+                isCharging = false;
+                chargeTime = 0f;
+            }
         }
         else
         {
-            if (isCharging) ReleaseArrow();
+            isCharging = false;
+            chargeTime = 0f;
         }
     }
 
-    private void StartCharging(TPVPlayerCombat.ArrowType arrowType)
+    private void TryFireArrow()
     {
-        isCharging = true;
-        isFullyCharged = false;
-        currentChargeTime = 0f;
-
-        GameObject prefabToUse = GetArrowPrefab(arrowType);
-        currentArrow = Instantiate(prefabToUse, arrowSpawnPoint.position, arrowSpawnPoint.rotation, arrowSpawnPoint);
-        currentArrow.GetComponent<Rigidbody>().isKinematic = true;
-        currentArrow.transform.SetParent(arrowSpawnPoint);
-
-        if (chargePlane != null) chargePlane.SetActive(true);
-    }
-
-    private GameObject GetArrowPrefab(TPVPlayerCombat.ArrowType type)
-    {
-        switch (type)
+        if (!combat.HasArrows())
         {
-            case TPVPlayerCombat.ArrowType.Pyro:
-                return pyroArrowPrefab;
-            case TPVPlayerCombat.ArrowType.Hydro:
-                return hydroArrowPrefab;
-            case TPVPlayerCombat.ArrowType.Physical:
-            default:
-                return physicalArrowPrefab;
+            Debug.Log("No " + combat.currentArrowType + " arrows left!");
+            return;
         }
-    }
 
-    private void ChargeArrow()
-    {
-        if (!isFullyCharged)
+        if (combat.TryConsumeArrow())
         {
-            currentChargeTime += Time.deltaTime;
-            if (currentChargeTime >= maxChargeTime)
-            {
-                currentChargeTime = maxChargeTime;
-                isFullyCharged = true;
-            }
+            FireArrow();
         }
-
-        if (chargePlaneMat != null)
+        else
         {
-            float chargePercent = currentChargeTime / maxChargeTime;
-            chargePlaneMat.SetFloat(emissionProperty, chargePercent);
+            Debug.Log("Failed to consume arrow: " + combat.currentArrowType);
         }
     }
 
-    private void ReleaseArrow()
-{
-    isCharging = false;
-
-    float chargePercent = currentChargeTime / maxChargeTime;
-    float shootForce = Mathf.Lerp(minShootForce, maxShootForce, chargePercent);
-
-    currentArrow.transform.SetParent(null);
-    Rigidbody rb = currentArrow.GetComponent<Rigidbody>();
-    rb.isKinematic = false;
-    rb.AddForce(arrowSpawnPoint.forward * shootForce, ForceMode.Impulse);
-
-    ArrowProjectile arrowProj = currentArrow.GetComponent<ArrowProjectile>();
-    if (arrowProj != null)
+    private void FireArrow()
     {
-        arrowProj.arrowType = TPVPlayerCombat.ArrowType.Physical; // default
+        GameObject arrow = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation);
+        Rigidbody rb = arrow.GetComponent<Rigidbody>();
+
+        float chargePercent = chargeTime / maxChargeTime;
+        float finalSpeed = arrowSpeed * Mathf.Lerp(0.5f, 1.5f, chargePercent);
+
+        if (rb != null)
+        {
+            rb.velocity = firePoint.forward * finalSpeed;
+        }
+
+        Arrow arrowComp = arrow.GetComponent<Arrow>();
+        if (arrowComp != null)
+        {
+            arrowComp.SetArrowType(combat.currentArrowType);
+        }
+
+        Debug.Log("Fired " + combat.currentArrowType + " arrow with speed " + finalSpeed);
     }
-
-    if (chargePlane != null) chargePlane.SetActive(false);
-    if (chargePlaneMat != null) chargePlaneMat.SetFloat(emissionProperty, 0f);
-
-    currentArrow = null;
-}
-
 }
