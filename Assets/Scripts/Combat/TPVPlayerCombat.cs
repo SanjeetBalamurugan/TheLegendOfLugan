@@ -2,52 +2,58 @@ using UnityEngine;
 
 public class TPVPlayerCombat : MonoBehaviour
 {
-    public enum ArrowType
-    {
-        Physical,
-        Pyro,
-        Hydro
-    }
-
-    [Header("Arrow Settings")]
+    public enum ArrowType { Pyro, Hydro, Physical }
     public ArrowType currentArrowType = ArrowType.Physical;
 
     private void Update()
     {
-        HandleArrowSwitching();
-    }
-
-    private void HandleArrowSwitching()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            currentArrowType = ArrowType.Physical;
-            Debug.Log("Switched to Physical Arrow");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            currentArrowType = ArrowType.Pyro;
-            Debug.Log("Switched to Pyro Arrow");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            currentArrowType = ArrowType.Hydro;
-            Debug.Log("Switched to Hydro Arrow");
-        }
+        if (Input.GetKeyDown(KeyCode.Alpha1)) currentArrowType = ArrowType.Pyro;
+        if (Input.GetKeyDown(KeyCode.Alpha2)) currentArrowType = ArrowType.Hydro;
+        if (Input.GetKeyDown(KeyCode.Alpha3)) currentArrowType = ArrowType.Physical;
     }
 
     public bool HasArrows()
     {
-        return ItemManager.instance.GetArrowCount(currentArrowType) > 0;
+        return GetArrowCount(currentArrowType) > 0;
     }
 
     public bool TryConsumeArrow()
     {
-        return ItemManager.instance.ConsumeArrow(currentArrowType);
+        switch (currentArrowType)
+        {
+            case ArrowType.Pyro:
+                if (ItemManager.instance.pyroArrowCount > 0)
+                {
+                    ItemManager.instance.pyroArrowCount--;
+                    return true;
+                }
+                break;
+            case ArrowType.Hydro:
+                if (ItemManager.instance.hydroArrowCount > 0)
+                {
+                    ItemManager.instance.hydroArrowCount--;
+                    return true;
+                }
+                break;
+            case ArrowType.Physical:
+                if (ItemManager.instance.physicalArrowCount > 0)
+                {
+                    ItemManager.instance.physicalArrowCount--;
+                    return true;
+                }
+                break;
+        }
+        return false;
     }
 
-    public int GetCurrentArrowCount()
+    private int GetArrowCount(ArrowType type)
     {
-        return ItemManager.instance.GetArrowCount(currentArrowType);
+        switch (type)
+        {
+            case ArrowType.Pyro: return ItemManager.instance.pyroArrowCount;
+            case ArrowType.Hydro: return ItemManager.instance.hydroArrowCount;
+            case ArrowType.Physical: return ItemManager.instance.physicalArrowCount;
+        }
+        return 0;
     }
 }
