@@ -4,7 +4,9 @@ public class BowWeapon : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform arrowSpawnPoint;
-    [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private GameObject physicalArrowPrefab;
+    [SerializeField] private GameObject pyroArrowPrefab;
+    [SerializeField] private GameObject hydroArrowPrefab;
     [SerializeField] private TPVPlayerMove player;
     [SerializeField] private GameObject chargePlane;
     [SerializeField] private string emissionProperty = "_EmissionFactor";
@@ -29,11 +31,11 @@ public class BowWeapon : MonoBehaviour
         }
     }
 
-    void Update()
+    public void HandleCombat(TPVPlayerCombat.ArrowType arrowType)
     {
         if (player != null && player.IsAiming)
         {
-            if (!isCharging) StartCharging();
+            if (!isCharging) StartCharging(arrowType);
             ChargeArrow();
         }
         else
@@ -42,17 +44,32 @@ public class BowWeapon : MonoBehaviour
         }
     }
 
-    private void StartCharging()
+    private void StartCharging(TPVPlayerCombat.ArrowType arrowType)
     {
         isCharging = true;
         isFullyCharged = false;
         currentChargeTime = 0f;
 
-        currentArrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, arrowSpawnPoint.rotation, arrowSpawnPoint);
+        GameObject prefabToUse = GetArrowPrefab(arrowType);
+        currentArrow = Instantiate(prefabToUse, arrowSpawnPoint.position, arrowSpawnPoint.rotation, arrowSpawnPoint);
         currentArrow.GetComponent<Rigidbody>().isKinematic = true;
         currentArrow.transform.SetParent(arrowSpawnPoint);
 
         if (chargePlane != null) chargePlane.SetActive(true);
+    }
+
+    private GameObject GetArrowPrefab(TPVPlayerCombat.ArrowType type)
+    {
+        switch (type)
+        {
+            case TPVPlayerCombat.ArrowType.Pyro:
+                return pyroArrowPrefab;
+            case TPVPlayerCombat.ArrowType.Hydro:
+                return hydroArrowPrefab;
+            case TPVPlayerCombat.ArrowType.Physical:
+            default:
+                return physicalArrowPrefab;
+        }
     }
 
     private void ChargeArrow()
