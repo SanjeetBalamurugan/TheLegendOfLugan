@@ -8,56 +8,92 @@ public class TPVPlayerMove : MonoBehaviour
     public float runSpeed = 8f;
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
-    public Camera playerCam;
+    public GameObject playerCam;
 
     [Header("Player GroundCheck")]
     public Transform groundCheck;
-    public float groundDistance = 0.4f;
+    public float groundDistance = 0.4f; 
     public LayerMask groundMask;
 
     private Vector3 velocity;
     private bool isGrounded;
     private float gravity = -9.81f;
 
+    [Header("Player Jumping")]
+    public float jumpHeight = 2f;
+
     [Header("Player Animation")]
     [SerializeField] private Animator animator;
 
+    private static readonly int IdleAnim  = Animator.StringToHash("Player_Idle");
+    private static readonly int WalkAnim  = Animator.StringToHash("Walking");
+    private static readonly int RunAnim   = Animator.StringToHash("StandardAnim_Running");
+    private static readonly int JumpAnim  = Animator.StringToHash("Jumping");
+
+    private int currentAnimState;
+
     [Header("Player Aim")]
-    [SerializeField] private Camera aimCam;
+    [SerializeField] private GameObject aimCam;
     private bool isAiming;
+    private bool lastAimingState = false;
+
+    private const string HorizontalAxis = "Horizontal";
+    private const string VerticalAxis = "Vertical";
 
     private void Start()
     {
-        aimCam.gameObject.SetActive(false);
-        playerCam.gameObject.SetActive(true);
+        aimCam.SetActive(false);
+        playerCam.SetActive(true);
+
+        currentAnimState = IdleAnim;
+        animator.Play(currentAnimState);
     }
 
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        isGrounded = controller.isGrounded;
 
+        float horizontal = Input.GetAxisRaw(HorizontalAxis);
+        float vertical = Input.GetAxisRaw(VerticalAxis);
+        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         isAiming = Input.GetMouseButton(1);
 
-        if(isAiming && !isRunning)
-        {
-            aimCam.gameObject.SetActive(true);
-            playerCam.gameObject.SetActive(false);
-
-            animator.SetLayerWeight(1, 1f);
-        } else
-        {
-            aimCam.gameObject.SetActive(false);
-            playerCam.gameObject.SetActive(true);
-
-            animator.SetLayerWeight(1, 0f);
-        }
-
-
-        HandleMovement(isRunning);
+        HandleAiming(isRunning);
+        HandleMovement(horizontal, vertical, isRunning);
+        HandleJump();
         ApplyGravity();
 
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void HandleAiming(bool isRunning)
+    {
+        if (isAiming != lastAimingState)
+        {
+            if (isAiming && !isRunning)
+            {
+                aimCam.SetActive(true);
+                playerCam.SetActive(false);
+                animator.SetLayerWeight(1, 1f);
+            }
+            else
+            {
+                aimCam.SetActive(false);
+                playerCam.SetActive(true);
+                animator.SetLayerWeight(1, 0f);
+            }
+
+            lastAimingState = isAiming;
+        }
+    }
+
+    private void HandleJump()
+    {
+        if (isGrounded && Input.GetButtonDown("Jump"))
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            ChangeAnimationState(JumpAnim);
+        }
     }
 
     private void ApplyGravity()
@@ -72,11 +108,8 @@ public class TPVPlayerMove : MonoBehaviour
         }
     }
 
-    private void HandleMovement(bool isRunning)
+    private void HandleMovement(float horizontal, float vertical, bool isRunning)
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (direction.magnitude >= 0.1f)
@@ -86,20 +119,26 @@ public class TPVPlayerMove : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
             float speed = isRunning ? runSpeed : moveSpeed;
-
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
 
-            if(isRunning)
-            {
-                animator.Play("StandardAnim_Running");
-            } else {
-                animator.Play("Walking");
-            }
-        } else
-        {
-            animator.Play("Player_Idle");
+            if (isRunning)
+                ChangeAnimationState(RunAnim);
+            else
+                ChangeAnimationState(WalkAnim);
         }
+        else if (isGrounded)
+        {
+            ChangeAnimationState(IdleAnim);
+        }
+    }
+
+    private void ChangeAnimationState(int newState)
+    {
+        if (currentAnimState == newState) return; 
+        animator.CrossFade(newState, 0.1f); 
+        currentAnimState = newState;
     }
 
     public bool IsGrounded() => isGrounded;
