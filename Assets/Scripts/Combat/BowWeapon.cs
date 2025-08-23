@@ -92,20 +92,27 @@ public class BowWeapon : MonoBehaviour
     }
 
     private void ReleaseArrow()
+{
+    isCharging = false;
+
+    float chargePercent = currentChargeTime / maxChargeTime;
+    float shootForce = Mathf.Lerp(minShootForce, maxShootForce, chargePercent);
+
+    currentArrow.transform.SetParent(null);
+    Rigidbody rb = currentArrow.GetComponent<Rigidbody>();
+    rb.isKinematic = false;
+    rb.AddForce(arrowSpawnPoint.forward * shootForce, ForceMode.Impulse);
+
+    ArrowProjectile arrowProj = currentArrow.GetComponent<ArrowProjectile>();
+    if (arrowProj != null)
     {
-        isCharging = false;
-
-        float chargePercent = currentChargeTime / maxChargeTime;
-        float shootForce = Mathf.Lerp(minShootForce, maxShootForce, chargePercent);
-
-        currentArrow.transform.SetParent(null);
-        Rigidbody rb = currentArrow.GetComponent<Rigidbody>();
-        rb.isKinematic = false;
-        rb.AddForce(arrowSpawnPoint.forward * shootForce, ForceMode.Impulse);
-
-        if (chargePlane != null) chargePlane.SetActive(false);
-        if (chargePlaneMat != null) chargePlaneMat.SetFloat(emissionProperty, 0f);
-
-        currentArrow = null;
+        arrowProj.arrowType = TPVPlayerCombat.ArrowType.Physical; // default
     }
+
+    if (chargePlane != null) chargePlane.SetActive(false);
+    if (chargePlaneMat != null) chargePlaneMat.SetFloat(emissionProperty, 0f);
+
+    currentArrow = null;
+}
+
 }
