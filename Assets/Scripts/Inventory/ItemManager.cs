@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,9 +12,9 @@ public class ItemManager : MonoBehaviour
     public List<Collider> picked;
 
     [Header("Arrow Inventory")]
-    public int physicalArrowCount = 0;
-    public int pyroArrowCount = 0;
-    public int hydroArrowCount = 0;
+    public int pyroArrowCount = 10;
+    public int hydroArrowCount = 10;
+    public int physicalArrowCount = 20;
 
     private void Awake()
     {
@@ -23,7 +22,6 @@ public class ItemManager : MonoBehaviour
     }
 
     public List<ItemScriptableObject> GetItemScriptableObjects() { return items; }
-
     public void AddInventoryItems(ItemScriptableObject item)
     {
         items.Add(item);
@@ -50,43 +48,5 @@ public class ItemManager : MonoBehaviour
                 Destroy(buttonTransform.gameObject);
             }
         }
-    }
-
-    public int GetArrowCount(TPVPlayerCombat.ArrowType type)
-    {
-        switch (type)
-        {
-            case TPVPlayerCombat.ArrowType.Physical: return physicalArrowCount;
-            case TPVPlayerCombat.ArrowType.Pyro: return pyroArrowCount;
-            case TPVPlayerCombat.ArrowType.Hydro: return hydroArrowCount;
-            default: return 0;
-        }
-    }
-
-    public void AddArrows(TPVPlayerCombat.ArrowType type, int amount)
-    {
-        switch (type)
-        {
-            case TPVPlayerCombat.ArrowType.Physical: physicalArrowCount += amount; break;
-            case TPVPlayerCombat.ArrowType.Pyro: pyroArrowCount += amount; break;
-            case TPVPlayerCombat.ArrowType.Hydro: hydroArrowCount += amount; break;
-        }
-    }
-
-    public bool ConsumeArrow(TPVPlayerCombat.ArrowType type)
-    {
-        switch (type)
-        {
-            case TPVPlayerCombat.ArrowType.Physical:
-                if (physicalArrowCount > 0) { physicalArrowCount--; return true; }
-                break;
-            case TPVPlayerCombat.ArrowType.Pyro:
-                if (pyroArrowCount > 0) { pyroArrowCount--; return true; }
-                break;
-            case TPVPlayerCombat.ArrowType.Hydro:
-                if (hydroArrowCount > 0) { hydroArrowCount--; return true; }
-                break;
-        }
-        return false;
     }
 }
