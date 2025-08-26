@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +10,11 @@ public class ItemManager : MonoBehaviour
     public Transform pickButtons;
     public GameObject pickButtonPrefab;
     public List<Collider> picked;
+
+    [Header("Arrow Inventory")]
+    public int pyroArrowCount = 10;
+    public int hydroArrowCount = 10;
+    public int physicalArrowCount = 20;
 
     private void Awake()
     {
@@ -33,17 +37,16 @@ public class ItemManager : MonoBehaviour
     }
 
     public void AfterPickUp(List<Collider> colliders)
-{
-    for (var i = 0; i < pickButtons.childCount; i++)
     {
-        Transform buttonTransform = pickButtons.GetChild(i);
-        Collider buttonCollider = buttonTransform.GetComponent<Collider>();
-
-        if (buttonCollider != null && colliders.Contains(buttonCollider))
+        for (var i = 0; i < pickButtons.childCount; i++)
         {
-            Destroy(buttonTransform.gameObject);
+            Transform buttonTransform = pickButtons.GetChild(i);
+            Collider buttonCollider = buttonTransform.GetComponent<Collider>();
+
+            if (buttonCollider != null && colliders.Contains(buttonCollider))
+            {
+                Destroy(buttonTransform.gameObject);
+            }
         }
     }
-}
-
 }

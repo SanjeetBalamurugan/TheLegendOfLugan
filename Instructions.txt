@@ -1,0 +1,15 @@
+**Prompt for Puzzle Design in GameDev:**
+
+I’m designing a puzzle game for a competition with the theme “Chain Reaction.” The game features a sequence of puzzles based on cause-and-effect where players must trigger events in the correct order to solve logic or physics-based challenges. Each reaction leads to the next in a fun and engaging way.
+
+The game’s narrative involves an MC (main character) who enters a ruined ancient portal seeking a powerful artifact. After entering, the MC meets a girl who provides a device to solve ancient puzzles and a bow that shoots elemental arrows. The first 5 levels take place near the temple, and the next 5 levels are set inside a heavily Mayan-inspired temple.
+
+I need puzzle ideas for these 10 levels. The puzzles should incorporate:
+- Cause-and-effect mechanics.
+- Elemental interactions (fire, water, earth, air, etc.).
+- Sequential actions where players need to think critically about the order of events.
+- Interactivity with the environment (moving objects, triggering mechanisms, etc.).
+
+The setting for the first 5 levels is an ancient, mystical area near the temple ruins, while the last 5 levels occur within the temple itself. The puzzles should increase in complexity as the game progresses, with some involving physics and logic-based solutions.
+
+Can you suggest specific puzzle ideas, including potential mechanics and ways to use the environment, the elemental bow, and the ancient device to solve the challenges?
