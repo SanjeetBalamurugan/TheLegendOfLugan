@@ -81,6 +81,7 @@ public class BowWeapon : MonoBehaviour
         Arrow arrowComp = arrow.GetComponent<Arrow>();
         if (arrowComp != null)
         {
+            Debug.Log("Abca");
             arrowComp.SetArrowType(combat.currentArrowType);
         }
 

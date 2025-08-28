@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    private TPVPlayerCombat.ArrowType arrowType;
+    public TPVPlayerCombat.ArrowType arrowType;
 
     public void SetArrowType(TPVPlayerCombat.ArrowType type)
     {
@@ -11,6 +11,7 @@ public class Arrow : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log(collision.collider.name);
         var interactive = collision.collider.GetComponent<IArrowInteractable>();
         if (interactive != null)
         {
