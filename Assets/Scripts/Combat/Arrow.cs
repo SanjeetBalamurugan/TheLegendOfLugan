@@ -11,11 +11,16 @@ public class Arrow : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.collider.name);
+        Debug.Log($"Arrow collided with: {collision.collider.name}");
         var interactive = collision.collider.GetComponent<IArrowInteractable>();
         if (interactive != null)
         {
             interactive.OnArrowHit(arrowType);
+            Debug.Log($"Arrow hit interactable object: {collision.collider.name}");
+        }
+        else
+        {
+            Debug.Log("Arrow hit non-interactable object");
         }
 
         Destroy(gameObject);
