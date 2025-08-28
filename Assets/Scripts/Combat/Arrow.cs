@@ -11,7 +11,7 @@ public class Arrow : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        var interactive = collision.collider.GetComponent<IArrowInteractive>();
+        var interactive = collision.collider.GetComponent<IArrowInteractable>();
         if (interactive != null)
         {
             interactive.OnArrowHit(arrowType);

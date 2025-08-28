@@ -8,7 +8,8 @@ public class TPVPlayerMove : MonoBehaviour
     public float runSpeed = 8f;
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
-    public GameObject playerCam;
+    public GameObject playerCam; // Cinemachine Freelook cam
+    public GameObject actualCam;
 
     [Header("Player GroundCheck")]
     public Transform groundCheck;
@@ -33,7 +34,7 @@ public class TPVPlayerMove : MonoBehaviour
     private int currentAnimState;
 
     [Header("Player Aim")]
-    [SerializeField] private GameObject aimCam;
+    [SerializeField] private GameObject aimCam; // Cinemachine Freelook cam
     private bool isAiming;
     private bool lastAimingState = false;
 
@@ -114,7 +115,7 @@ public class TPVPlayerMove : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCam.transform.eulerAngles.y;
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + actualCam.transform.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
