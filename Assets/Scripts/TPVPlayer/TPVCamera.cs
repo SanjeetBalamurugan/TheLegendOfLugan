@@ -1,33 +1,42 @@
 using UnityEngine;
-using Cinemachine;
 
 public class TPVCamera : MonoBehaviour
 {
-    public CinemachineFreeLook freeLookCamera;
-    public float mouseSensitivity = 3f;
-    public float smoothing = 5f;
-    public float verticalClampMin = 0.1f;
-    public float verticalClampMax = 0.9f;
-
-    private Vector2 mouseDelta;
-    private Vector2 smoothMouse;
+    public Transform player;
+    public float followSpeed = 10f;
+    public Vector3 defaultOffset = new Vector3(0f, 1.5f, -4f);
+    public Vector3 aimOffset = new Vector3(0f, 1.5f, -2f);
+    public float rotationSpeed = 5f;
+    public Camera mainCamera;
+    public TPVPlayerMove playerMoveScript;
+    private Vector3 currentOffset;
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        currentOffset = defaultOffset;
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (playerMoveScript == null) playerMoveScript = player.GetComponent<TPVPlayerMove>();
     }
 
     void Update()
     {
-        float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+        bool isAiming = playerMoveScript.GetAimValue();
+        currentOffset = isAiming ? aimOffset : defaultOffset;
+        HandleCameraPosition();
+        HandleCameraRotation();
+    }
 
-        mouseDelta = Vector2.Lerp(mouseDelta, new Vector2(mouseX, mouseY), Time.deltaTime * smoothing);
+    private void HandleCameraPosition()
+    {
+        Vector3 desiredPosition = player.position + currentOffset;
+        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, desiredPosition, Time.deltaTime * followSpeed);
+    }
 
-        freeLookCamera.m_XAxis.Value += -mouseDelta.x;
-        freeLookCamera.m_YAxis.Value -= mouseDelta.y * 0.01f;
-
-        freeLookCamera.m_YAxis.Value = -Mathf.Clamp(freeLookCamera.m_YAxis.Value, verticalClampMin, verticalClampMax);
+    private void HandleCameraRotation()
+    {
+        float horizontalRotation = Input.GetAxis("Mouse X") * rotationSpeed;
+        float verticalRotation = -Input.GetAxis("Mouse Y") * rotationSpeed;
+        mainCamera.transform.RotateAround(player.position, Vector3.up, horizontalRotation);
+        mainCamera.transform.RotateAround(player.position, mainCamera.transform.right, verticalRotation);
     }
 }
