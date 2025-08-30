@@ -138,10 +138,11 @@ public class TPVPlayerMove : MonoBehaviour
     private void ChangeAnimationState(int newState)
     {
         if (currentAnimState == newState) return; 
-        animator.CrossFade(newState, 0.1f); 
+        animator.CrossFade(newState, 0.01f); 
         currentAnimState = newState;
     }
 
     public bool IsGrounded() => isGrounded;
     public float GetGravity() => gravity;
+    public bool GetAimValue() => isAiming;
 }

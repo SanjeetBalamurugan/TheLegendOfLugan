@@ -71,7 +71,7 @@ public class BowWeapon : MonoBehaviour
         Rigidbody rb = arrow.GetComponent<Rigidbody>();
 
         float chargePercent = chargeTime / maxChargeTime;
-        float finalSpeed = arrowSpeed * Mathf.Lerp(0.5f, 1.5f, chargePercent);
+        float finalSpeed = arrowSpeed;
 
         if (rb != null)
         {
