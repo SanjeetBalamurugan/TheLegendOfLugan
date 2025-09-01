@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -1297897887160669509}
   - component: {fileID: -282576212425870961}
   - component: {fileID: 109618727810686656}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,6 +48,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrowType: 0
+  useRaycastDetection: 0
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 127
 --- !u!54 &-282576212425870961
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -159,6 +163,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Arrow
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 88a30cc60aa1523439d3e9b00469c46a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88a30cc60aa1523439d3e9b00469c46a, type: 3}

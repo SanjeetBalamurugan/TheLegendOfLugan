@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &267406060
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 267406061}
+  m_Layer: 0
+  m_Name: AimFocus
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &267406061
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267406060}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.63, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6565389234143450050}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1059966111
 GameObject:
   m_ObjectHideFlags: 0
@@ -50,8 +81,13 @@ MonoBehaviour:
     type: 3}
   firePoint: {fileID: 1949926291}
   combat: {fileID: 1413205673}
-  arrowSpeed: 30
+  arrowSpeed: 100
   maxChargeTime: 2
+  useChargeSystem: 1
+  aimMaxDistance: 1000
+  aimLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1413205671
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,7 +157,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1949926290}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.482, z: 0}
+  m_LocalPosition: {x: -0.032, y: 0.482, z: 0.637}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -194,6 +230,7 @@ Transform:
   - {fileID: 6565389233517212414}
   - {fileID: 1059966112}
   - {fileID: 1413205672}
+  - {fileID: 267406061}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -210,9 +247,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 6565389234143450051}
-  moveSpeed: 5
+  moveSpeed: 2
   runSpeed: 8
-  turnSmoothTime: 0.1
+  turnSmoothTime: 0.09
   playerCam: {fileID: 0}
   actualCam: {fileID: 0}
   groundCheck: {fileID: 6565389233517212414}
@@ -221,7 +258,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   jumpHeight: 2
-  animator: {fileID: 0}
+  animator: {fileID: 2905916240399155713}
   aimCam: {fileID: 0}
 --- !u!143 &6565389234143450051
 CharacterController:
@@ -446,8 +483,19 @@ PrefabInstance:
       propertyPath: m_Name
       value: X Bot
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 11e44d51005e6ad42b86ccb9d82ce5b3,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 565ed2d6bbc9de74ba314b32b2a4fd0d, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 11e44d51005e6ad42b86ccb9d82ce5b3, type: 3}
+--- !u!95 &2905916240399155713 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 11e44d51005e6ad42b86ccb9d82ce5b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 8735143542148005776}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9129869259554035835 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 11e44d51005e6ad42b86ccb9d82ce5b3,
