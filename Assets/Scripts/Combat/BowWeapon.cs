@@ -26,6 +26,7 @@ public class BowWeapon : MonoBehaviour
 
         if (isAiming)
         {
+            arrowPrefab.active = true;
             if (useChargeSystem)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -57,6 +58,7 @@ public class BowWeapon : MonoBehaviour
         }
         else
         {
+            arrowPrefab.active = false;
             isCharging = false;
             chargeTime = 0f;
         }
