@@ -9,6 +9,9 @@ public class SoundData : ScriptableObject
         public string key;
         public AudioClip clip;
         public bool loop;
+
+        public float volume = 1f;
+        public float pitch = 1f;
     }
 
     public SoundEntry[] sounds;

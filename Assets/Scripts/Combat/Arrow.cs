@@ -8,6 +8,11 @@ public class Arrow : MonoBehaviour
     [SerializeField] private bool useRaycastDetection = false; 
     [SerializeField] private LayerMask hitLayers = ~0; // everything by default
 
+    [Header("Debug Settings")]
+    [SerializeField] private bool showDebugLine = true;
+    [SerializeField] private Color debugLineColor = Color.green;
+    [SerializeField] private float debugLineDuration = 5f;
+
     private Vector3 lastPos;
     private Rigidbody rb;
 
@@ -25,9 +30,13 @@ public class Arrow : MonoBehaviour
 
     private void Update()
     {
+        Vector3 currentPos = transform.position;
+
+        // Draw trajectory debug line
+        DrawDebugLine(lastPos, currentPos);
+
         if (useRaycastDetection)
         {
-            Vector3 currentPos = transform.position;
             Vector3 direction = currentPos - lastPos;
             float distance = direction.magnitude;
 
@@ -35,9 +44,9 @@ public class Arrow : MonoBehaviour
             {
                 OnArrowImpact(hit.collider, hit.point);
             }
-
-            lastPos = currentPos;
         }
+
+        lastPos = currentPos;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -68,5 +77,14 @@ public class Arrow : MonoBehaviour
     public void SetArrowType(TPVPlayerCombat.ArrowType type)
     {
         arrowType = type;
+    }
+
+    /// <summary>
+    /// Draws debug line for arrow trajectory
+    /// </summary>
+    private void DrawDebugLine(Vector3 from, Vector3 to)
+    {
+        if (!showDebugLine) return;
+        Debug.DrawLine(from, to, debugLineColor, debugLineDuration);
     }
 }
