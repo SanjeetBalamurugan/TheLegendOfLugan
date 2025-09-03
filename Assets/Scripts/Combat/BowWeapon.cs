@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 
 public class BowWeapon : MonoBehaviour
 {
@@ -17,8 +16,6 @@ public class BowWeapon : MonoBehaviour
     [Header("Aiming")]
     [SerializeField] private float aimMaxDistance = 1000f;
     [SerializeField] private LayerMask aimLayerMask = ~0;
-    [SerializeField] private Transform AimTarget;
-    [SerializeField] private MultiAimConstraint aimConstraint;
 
     private bool isAiming;
     private bool isCharging;
@@ -30,7 +27,6 @@ public class BowWeapon : MonoBehaviour
 
         if (isAiming)
         {
-            aimConstraint.weight = 1f;
             if (useChargeSystem)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -62,7 +58,6 @@ public class BowWeapon : MonoBehaviour
         }
         else
         {
-            aimConstraint.weight = 0f;
             isCharging = false;
             chargeTime = 0f;
         }
@@ -88,7 +83,7 @@ public class BowWeapon : MonoBehaviour
 
     private void FireArrow()
     {
-        GameObject arrow = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation);
+        GameObject arrow = Instantiate(arrowPrefab, firePoint.position, Quaternion.identity);
         Rigidbody rb = arrow.GetComponent<Rigidbody>();
 
         float finalSpeed = arrowSpeed;
@@ -99,6 +94,7 @@ public class BowWeapon : MonoBehaviour
             finalSpeed *= Mathf.Lerp(0.5f, 1f, chargePercent); // slow at low charge, full at max
         }
 
+        // Always aim through the center of the screen
         Vector3 targetPoint = GetAimPoint();
         Vector3 launchDir = (targetPoint - firePoint.position).normalized;
 
@@ -115,7 +111,7 @@ public class BowWeapon : MonoBehaviour
             arrowComp.SetArrowType(combat.currentArrowType);
         }
 
-        Debug.Log("Fired " + combat.currentArrowType + " arrow with speed " + finalSpeed);
+        Debug.Log($"Fired {combat.currentArrowType} arrow at {targetPoint} with speed {finalSpeed}");
     }
 
     private Vector3 GetAimPoint()
@@ -130,11 +126,11 @@ public class BowWeapon : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, aimMaxDistance, aimLayerMask, QueryTriggerInteraction.Ignore))
         {
-            AimTarget.transform.position = hit.point;
-            Debug.Log(hit.point);
+            Debug.DrawLine(ray.origin, hit.point, Color.red, 1f);
             return hit.point;
         }
 
+        Debug.DrawRay(ray.origin, ray.direction * aimMaxDistance, Color.green, 1f);
         return ray.origin + ray.direction * aimMaxDistance;
     }
 }
