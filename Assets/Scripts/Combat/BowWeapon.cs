@@ -11,19 +11,16 @@ public class BowWeapon : MonoBehaviour
     [Header("Arrow Settings")]
     [SerializeField] private float arrowSpeed = 30f;
     [SerializeField] private float maxChargeTime = 2f;
-    [SerializeField] private bool useChargeSystem = true; 
 
     [Header("Aiming")]
     [SerializeField] private float aimMaxDistance = 1000f;
     [SerializeField] private LayerMask aimLayerMask = ~0;
 
     [Header("Debug")]
-    [SerializeField] private bool debugMode = true;
+    [SerializeField] private bool debugMode = false;
 
     private bool isAiming;
-    private bool isCharging;
     private float chargeTime;
-    private Vector3 lastAimPoint;
 
     private void Update()
     {
@@ -31,110 +28,61 @@ public class BowWeapon : MonoBehaviour
 
         if (isAiming)
         {
-            if (useChargeSystem)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    isCharging = true;
-                    chargeTime = 0f;
-                }
+            chargeTime += Time.deltaTime;
+            chargeTime = Mathf.Min(chargeTime, maxChargeTime);
 
-                if (isCharging)
-                {
-                    chargeTime += Time.deltaTime;
-                    chargeTime = Mathf.Min(chargeTime, maxChargeTime);
-                }
-
-                if (Input.GetMouseButtonUp(0) && isCharging)
-                {
-                    TryFireArrow();
-                    isCharging = false;
-                    chargeTime = 0f;
-                }
-            }
-            else
+            if (Input.GetMouseButtonDown(0))
             {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    TryFireArrow();
-                }
+                TryFireArrow();
+                chargeTime = 0f;
             }
         }
         else
         {
-            isCharging = false;
             chargeTime = 0f;
         }
-
-        lastAimPoint = GetAimPoint();
     }
 
     private void TryFireArrow()
     {
-        if (!combat.HasArrows())
-        {
-            Debug.Log("No " + combat.currentArrowType + " arrows left!");
-            return;
-        }
-
-        if (combat.TryConsumeArrow())
-        {
-            FireArrow();
-        }
-        else
-        {
-            Debug.Log("Failed to consume arrow: " + combat.currentArrowType);
-        }
+        if (!combat.HasArrows()) return;
+        if (combat.TryConsumeArrow()) FireArrow();
     }
 
     private void FireArrow()
     {
-        GameObject arrow = Instantiate(arrowPrefab, firePoint.position, Quaternion.identity);
+        GameObject arrow = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = arrow.GetComponent<Rigidbody>();
 
-        float finalSpeed = arrowSpeed;
+        float chargePercent = Mathf.Clamp01(chargeTime / maxChargeTime);
+        float finalSpeed = arrowSpeed * Mathf.Lerp(0.5f, 1f, chargePercent);
 
-        if (useChargeSystem && maxChargeTime > 0f)
-        {
-            float chargePercent = Mathf.Clamp01(chargeTime / maxChargeTime);
-            finalSpeed *= Mathf.Lerp(0.5f, 1f, chargePercent);
-        }
+        Vector3 targetPoint = GetAimPoint();
+        Vector3 launchDir = (targetPoint - firePoint.position).normalized;
 
-        Vector3 launchDir = (lastAimPoint - firePoint.position).normalized;
-
-        if (rb != null)
-        {
-            rb.velocity = launchDir * finalSpeed;
-        }
+        if (rb != null) rb.velocity = launchDir * finalSpeed;
 
         arrow.transform.rotation = Quaternion.LookRotation(launchDir, Vector3.up);
 
         Arrow arrowComp = arrow.GetComponent<Arrow>();
-        if (arrowComp != null)
-        {
-            arrowComp.SetArrowType(combat.currentArrowType);
-        }
+        if (arrowComp != null) arrowComp.SetArrowType(combat.currentArrowType);
 
-        Debug.Log($"Fired {combat.currentArrowType} arrow at {lastAimPoint} with speed {finalSpeed}");
+        if (debugMode) Debug.Log($"Fired {combat.currentArrowType} arrow, charge {chargePercent:P0}, speed {finalSpeed}");
     }
 
     private Vector3 GetAimPoint()
     {
         Camera cam = move.GetActualCam();
-        if (cam == null)
-            return firePoint.position + firePoint.forward * aimMaxDistance;
+        if (cam == null) return firePoint.position + firePoint.forward * aimMaxDistance;
 
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
         if (Physics.Raycast(ray, out RaycastHit hit, aimMaxDistance, aimLayerMask, QueryTriggerInteraction.Ignore))
         {
-            if (debugMode)
-                Debug.DrawLine(ray.origin, hit.point, Color.red, 0.01f);
+            if (debugMode) Debug.Log($"Aim hit: {hit.collider.name} at {hit.point}");
             return hit.point;
         }
 
-        if (debugMode)
-            Debug.DrawRay(ray.origin, ray.direction * aimMaxDistance, Color.green, 0.01f);
         return ray.origin + ray.direction * aimMaxDistance;
     }
 
@@ -142,11 +90,7 @@ public class BowWeapon : MonoBehaviour
     {
         if (!debugMode || firePoint == null) return;
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(firePoint.position, 0.05f);
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(firePoint.position, lastAimPoint);
-        Gizmos.DrawSphere(lastAimPoint, 0.05f);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(firePoint.position, GetAimPoint());
     }
 }
