@@ -16,11 +16,9 @@ public class BowWeapon : MonoBehaviour
     [SerializeField] private float aimMaxDistance = 1000f;
     [SerializeField] private LayerMask aimLayerMask = ~0;
 
-    [Header("Debug")]
-    [SerializeField] private bool debugMode = false;
-
     private bool isAiming;
     private float chargeTime;
+    private GameObject chargingArrow;
 
     private void Update()
     {
@@ -31,43 +29,66 @@ public class BowWeapon : MonoBehaviour
             chargeTime += Time.deltaTime;
             chargeTime = Mathf.Min(chargeTime, maxChargeTime);
 
+            if (chargingArrow == null)
+            {
+                chargingArrow = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation, firePoint);
+                Rigidbody rb = chargingArrow.GetComponent<Rigidbody>();
+                if (rb) rb.isKinematic = true;
+                Collider col = chargingArrow.GetComponent<Collider>();
+                if (col) col.enabled = false;
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
                 TryFireArrow();
-                chargeTime = 0f;
             }
         }
         else
         {
             chargeTime = 0f;
+            if (chargingArrow) Destroy(chargingArrow);
         }
     }
 
     private void TryFireArrow()
     {
-        if (!combat.HasArrows()) return;
-        if (combat.TryConsumeArrow()) FireArrow();
+        if (!combat.HasArrows())
+        {
+            Debug.Log("No " + combat.currentArrowType + " arrows left!");
+            return;
+        }
+
+        if (combat.TryConsumeArrow())
+        {
+            FireArrow();
+        }
     }
 
     private void FireArrow()
     {
-        GameObject arrow = Instantiate(arrowPrefab, firePoint.position, firePoint.rotation);
-        Rigidbody rb = arrow.GetComponent<Rigidbody>();
+        if (chargingArrow == null) return;
 
-        float chargePercent = Mathf.Clamp01(chargeTime / maxChargeTime);
-        float finalSpeed = arrowSpeed * Mathf.Lerp(0.5f, 1f, chargePercent);
+        chargingArrow.transform.parent = null;
+        Rigidbody rb = chargingArrow.GetComponent<Rigidbody>();
+        Collider col = chargingArrow.GetComponent<Collider>();
 
-        Vector3 targetPoint = GetAimPoint();
-        Vector3 launchDir = (targetPoint - firePoint.position).normalized;
+        float finalSpeed = arrowSpeed * Mathf.Clamp01(chargeTime / maxChargeTime);
 
-        if (rb != null) rb.velocity = launchDir * finalSpeed;
+        if (rb)
+        {
+            rb.isKinematic = false;
+            rb.velocity = (GetAimPoint() - firePoint.position).normalized * finalSpeed;
+        }
 
-        arrow.transform.rotation = Quaternion.LookRotation(launchDir, Vector3.up);
+        if (col) col.enabled = true;
 
-        Arrow arrowComp = arrow.GetComponent<Arrow>();
-        if (arrowComp != null) arrowComp.SetArrowType(combat.currentArrowType);
+        Arrow arrowComp = chargingArrow.GetComponent<Arrow>();
+        if (arrowComp != null)
+            arrowComp.SetArrowType(combat.currentArrowType);
 
-        if (debugMode) Debug.Log($"Fired {combat.currentArrowType} arrow, charge {chargePercent:P0}, speed {finalSpeed}");
+        chargingArrow.transform.rotation = Quaternion.LookRotation(rb.velocity.normalized, Vector3.up);
+        chargingArrow = null;
+        chargeTime = 0f;
     }
 
     private Vector3 GetAimPoint()
@@ -78,19 +99,8 @@ public class BowWeapon : MonoBehaviour
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
         if (Physics.Raycast(ray, out RaycastHit hit, aimMaxDistance, aimLayerMask, QueryTriggerInteraction.Ignore))
-        {
-            if (debugMode) Debug.Log($"Aim hit: {hit.collider.name} at {hit.point}");
             return hit.point;
-        }
 
         return ray.origin + ray.direction * aimMaxDistance;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!debugMode || firePoint == null) return;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(firePoint.position, GetAimPoint());
     }
 }
