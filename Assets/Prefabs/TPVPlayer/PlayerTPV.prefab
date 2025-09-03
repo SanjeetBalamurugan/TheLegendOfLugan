@@ -250,13 +250,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ce12ebd9d2fd94f8851395eee8d681, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firePoint: {fileID: 1949926291}
   arrowPrefab: {fileID: 3374820347332705753, guid: cb92f6e5f8021414c9c3281830cdc4ca,
     type: 3}
-  playerMove: {fileID: 6565389234143450052}
+  firePoint: {fileID: 1949926291}
+  combat: {fileID: 0}
   arrowSpeed: 100
-  destroyAfterSeconds: 5
-  debugDraw: 1
+  maxChargeTime: 2
+  useChargeSystem: 1
+  aimMaxDistance: 1000
+  aimLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1413205671
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,7 +510,6 @@ MonoBehaviour:
   runSpeed: 8
   turnSmoothTime: 0.09
   playerCam: {fileID: 0}
-  aimCam: {fileID: 0}
   actualCam: {fileID: 0}
   groundCheck: {fileID: 6565389233517212414}
   groundDistance: 0.4
@@ -515,14 +518,10 @@ MonoBehaviour:
     m_Bits: 8
   jumpHeight: 2
   animator: {fileID: 2905916240399155713}
+  aimCam: {fileID: 0}
   playerAimRotation: {x: 0, y: 126.71, z: 0}
   playerModel: {fileID: 9129869259554035835}
   aimRotateSpeed: 5
-  aimTarget: {fileID: 227666619}
-  aimMaxDistance: 1000
-  aimLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!143 &6565389234143450051
 CharacterController:
   m_ObjectHideFlags: 0

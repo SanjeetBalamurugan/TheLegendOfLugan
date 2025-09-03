@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class BowWeapon : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class BowWeapon : MonoBehaviour
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private TPVPlayerCombat combat;
+    [SerializeField] private TPVPlayerMove move;
 
     [Header("Arrow Settings")]
     [SerializeField] private float arrowSpeed = 30f;
@@ -15,6 +17,8 @@ public class BowWeapon : MonoBehaviour
     [Header("Aiming")]
     [SerializeField] private float aimMaxDistance = 1000f;
     [SerializeField] private LayerMask aimLayerMask = ~0;
+    [SerializeField] private Transform AimTarget;
+    [SerializeField] private MultiAimConstraint aimConstraint;
 
     private bool isAiming;
     private bool isCharging;
@@ -26,7 +30,7 @@ public class BowWeapon : MonoBehaviour
 
         if (isAiming)
         {
-            arrowPrefab.active = true;
+            aimConstraint.weight = 1f;
             if (useChargeSystem)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -58,7 +62,7 @@ public class BowWeapon : MonoBehaviour
         }
         else
         {
-            arrowPrefab.active = false;
+            aimConstraint.weight = 0f;
             isCharging = false;
             chargeTime = 0f;
         }
@@ -116,7 +120,7 @@ public class BowWeapon : MonoBehaviour
 
     private Vector3 GetAimPoint()
     {
-        Camera cam = Camera.main;
+        Camera cam = move.GetActualCam();
         if (cam == null)
         {
             return firePoint.position + firePoint.forward * aimMaxDistance;
@@ -126,6 +130,8 @@ public class BowWeapon : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, aimMaxDistance, aimLayerMask, QueryTriggerInteraction.Ignore))
         {
+            AimTarget.transform.position = hit.point;
+            Debug.Log(hit.point);
             return hit.point;
         }
 

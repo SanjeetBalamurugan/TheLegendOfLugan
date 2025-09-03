@@ -9,7 +9,7 @@ public class TPVPlayerMove : MonoBehaviour
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
     public GameObject playerCam;
-    public GameObject actualCam;
+    public Camera actualCam;
 
     [Header("Player GroundCheck")]
     public Transform groundCheck;
@@ -203,4 +203,5 @@ public class TPVPlayerMove : MonoBehaviour
     public bool IsGrounded() => isGrounded;
     public float GetGravity() => gravity;
     public bool GetAimValue() => isAiming;
+    public Camera GetActualCam() => actualCam;
 }
