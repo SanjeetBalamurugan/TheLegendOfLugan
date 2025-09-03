@@ -21,6 +21,8 @@ public class BowWeapon : MonoBehaviour
     private bool isCharging;
     private float chargeTime;
 
+    private Vector3 lastAimPoint; // for debug drawing
+
     private void Update()
     {
         isAiming = Input.GetMouseButton(1);
@@ -61,6 +63,9 @@ public class BowWeapon : MonoBehaviour
             isCharging = false;
             chargeTime = 0f;
         }
+
+        // Update aim point every frame for debugging
+        lastAimPoint = GetAimPoint();
     }
 
     private void TryFireArrow()
@@ -94,9 +99,7 @@ public class BowWeapon : MonoBehaviour
             finalSpeed *= Mathf.Lerp(0.5f, 1f, chargePercent); // slow at low charge, full at max
         }
 
-        // Always aim through the center of the screen
-        Vector3 targetPoint = GetAimPoint();
-        Vector3 launchDir = (targetPoint - firePoint.position).normalized;
+        Vector3 launchDir = (lastAimPoint - firePoint.position).normalized;
 
         if (rb != null)
         {
@@ -111,7 +114,7 @@ public class BowWeapon : MonoBehaviour
             arrowComp.SetArrowType(combat.currentArrowType);
         }
 
-        Debug.Log($"Fired {combat.currentArrowType} arrow at {targetPoint} with speed {finalSpeed}");
+        Debug.Log($"Fired {combat.currentArrowType} arrow at {lastAimPoint} with speed {finalSpeed}");
     }
 
     private Vector3 GetAimPoint()
@@ -126,11 +129,24 @@ public class BowWeapon : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, aimMaxDistance, aimLayerMask, QueryTriggerInteraction.Ignore))
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.red, 1f);
+            Debug.DrawLine(ray.origin, hit.point, Color.red, 0.01f);
             return hit.point;
         }
 
-        Debug.DrawRay(ray.origin, ray.direction * aimMaxDistance, Color.green, 1f);
+        Debug.DrawRay(ray.origin, ray.direction * aimMaxDistance, Color.green, 0.01f);
         return ray.origin + ray.direction * aimMaxDistance;
+    }
+
+    // --- Debug Gizmos ---
+    private void OnDrawGizmos()
+    {
+        if (firePoint == null) return;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(firePoint.position, 0.05f);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(firePoint.position, lastAimPoint);
+        Gizmos.DrawSphere(lastAimPoint, 0.05f);
     }
 }
