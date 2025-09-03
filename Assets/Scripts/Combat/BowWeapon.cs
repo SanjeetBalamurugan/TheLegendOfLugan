@@ -17,11 +17,13 @@ public class BowWeapon : MonoBehaviour
     [SerializeField] private float aimMaxDistance = 1000f;
     [SerializeField] private LayerMask aimLayerMask = ~0;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugMode = true;
+
     private bool isAiming;
     private bool isCharging;
     private float chargeTime;
-
-    private Vector3 lastAimPoint; // for debug drawing
+    private Vector3 lastAimPoint;
 
     private void Update()
     {
@@ -64,7 +66,6 @@ public class BowWeapon : MonoBehaviour
             chargeTime = 0f;
         }
 
-        // Update aim point every frame for debugging
         lastAimPoint = GetAimPoint();
     }
 
@@ -96,7 +97,7 @@ public class BowWeapon : MonoBehaviour
         if (useChargeSystem && maxChargeTime > 0f)
         {
             float chargePercent = Mathf.Clamp01(chargeTime / maxChargeTime);
-            finalSpeed *= Mathf.Lerp(0.5f, 1f, chargePercent); // slow at low charge, full at max
+            finalSpeed *= Mathf.Lerp(0.5f, 1f, chargePercent);
         }
 
         Vector3 launchDir = (lastAimPoint - firePoint.position).normalized;
@@ -121,26 +122,25 @@ public class BowWeapon : MonoBehaviour
     {
         Camera cam = move.GetActualCam();
         if (cam == null)
-        {
             return firePoint.position + firePoint.forward * aimMaxDistance;
-        }
 
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
         if (Physics.Raycast(ray, out RaycastHit hit, aimMaxDistance, aimLayerMask, QueryTriggerInteraction.Ignore))
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.red, 0.01f);
+            if (debugMode)
+                Debug.DrawLine(ray.origin, hit.point, Color.red, 0.01f);
             return hit.point;
         }
 
-        Debug.DrawRay(ray.origin, ray.direction * aimMaxDistance, Color.green, 0.01f);
+        if (debugMode)
+            Debug.DrawRay(ray.origin, ray.direction * aimMaxDistance, Color.green, 0.01f);
         return ray.origin + ray.direction * aimMaxDistance;
     }
 
-    // --- Debug Gizmos ---
     private void OnDrawGizmos()
     {
-        if (firePoint == null) return;
+        if (!debugMode || firePoint == null) return;
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(firePoint.position, 0.05f);
