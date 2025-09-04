@@ -97,7 +97,7 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _AlphaCutoff: 0.5
-    - _AlphaThreshold: 0.09
+    - _AlphaThreshold: 0.3
     - _Blend: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -111,7 +111,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _HeightBlend: 0.99
+    - _HeightBlend: 0.01
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -139,12 +139,12 @@ Material:
     - __dirty: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BottomColor: {r: 0.15819687, g: 0.4245283, b: 0.23429152, a: 0}
+    - _BottomColor: {r: 0.34117648, g: 0.4431373, b: 0.015686275, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FarColor: {r: 0.29142934, g: 0.5566038, b: 0.36784652, a: 0}
-    - _NearColor: {r: 0.33668566, g: 0.735849, b: 0.44782528, a: 0}
-    - _NearFarRange: {r: 3.1, g: 17.79, b: 0, a: 0}
+    - _FarColor: {r: 0.333283, g: 0.4528302, b: 0, a: 1}
+    - _NearColor: {r: 0.42100963, g: 0.6509434, b: 0.009211446, a: 1}
+    - _NearFarRange: {r: 0, g: 0, b: 0, a: 0}
     - _ShadowColor: {r: 0.4811321, g: 0.22921859, b: 0.22921859, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WindNoiseContrase: {r: 0.2, g: 0.51, b: 0, a: 0}
