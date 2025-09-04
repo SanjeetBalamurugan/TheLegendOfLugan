@@ -13,7 +13,23 @@ public class UpPlatformButton : MonoBehaviour, IArrowInteractable
     {
         foreach (GameObject platform in platformObjects)
         {
-            platform.transform.Translate(platform.transform.position.x, finalPlacement.y, platform.transform.position.z);
+            StartCoroutine(MovePlatform(platform));
         }
+    }
+
+    private IEnumerator MovePlatform(GameObject platform)
+    {
+        Vector3 startPos = platform.transform.position;
+        Vector3 targetPos = new Vector3(startPos.x, finalPlacement.position.y, startPos.z);
+
+        float elapsed = 0f;
+        while (elapsed < moveSmoothness)
+        {
+            platform.transform.position = Vector3.Lerp(startPos, targetPos, elapsed / moveSmoothness);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        platform.transform.position = targetPos;
     }
 }
