@@ -9,8 +9,8 @@ public class TPVPlayerMove : MonoBehaviour
     public float runSpeed = 8f;
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
-    public CinemachineVirtualCamera playerCam;
-    public CinemachineVirtualCamera aimCam;
+    public CinemachineFreeLook playerCam;
+    public CinemachineFreeLook aimCam;
     public Camera actualCam;
 
     [Header("Player GroundCheck")]
