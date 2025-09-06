@@ -13,7 +13,6 @@ public class PostProcessingManager : MonoBehaviour
     private ColorAdjustments colorAdjustments;
     private Bloom bloom;
     private LiftGammaGain liftGammaGain;
-    private AmbientOcclusion ambientOcclusion;
     private Vignette vignette;
     private DepthOfField depthOfField;
 
@@ -28,7 +27,6 @@ public class PostProcessingManager : MonoBehaviour
         postProcessVolume.profile.TryGet(out colorAdjustments);
         postProcessVolume.profile.TryGet(out bloom);
         postProcessVolume.profile.TryGet(out liftGammaGain);
-        postProcessVolume.profile.TryGet(out ambientOcclusion);
         postProcessVolume.profile.TryGet(out vignette);
         postProcessVolume.profile.TryGet(out depthOfField);
 
@@ -60,11 +58,11 @@ public class PostProcessingManager : MonoBehaviour
             liftGammaGain.gain.value = new Vector4(1.12f, 1.12f, 1.12f, 0);
         }
 
-        if (ambientOcclusion != null)
+        /*if (ambientOcclusion != null)
         {
             ambientOcclusion.intensity.value = 0.5f;
             ambientOcclusion.quality.value = 2; // medium
-        }
+        }*/
 
         if (vignette != null)
         {
