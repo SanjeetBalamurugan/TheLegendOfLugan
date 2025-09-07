@@ -1,136 +1,94 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class ElementalTargetChain : MonoBehaviour, IArrowInteractable
+public class ExplosiveBarrel : MonoBehaviour, IArrowInteractable
 {
-    [Header("Sequence Settings")]
-    [SerializeField] private TPVPlayerCombat.ArrowType requiredArrowType;
-    [SerializeField] private ElementalTargetChain nextTarget;
+    [Header("Explosion Settings")]
+    [SerializeField] private float explosionRadius = 5f;
+    [SerializeField] private float explosionForce = 700f;
+    [SerializeField] private float delayBeforeExplosion = 0.5f;
+    [SerializeField] private GameObject explosionVFX;
 
-    [Header("Light Settings")]
-    [SerializeField] private Light pointLight;
-    [SerializeField] private float blinkIntensityMin = 1f;
-    [SerializeField] private float blinkIntensityMax = 3f;
-    [SerializeField] private float blinkSpeed = 2f;
+    [Header("Barrel Chain Settings")]
+    [SerializeField] private LayerMask barrelLayerMask;
+    [SerializeField] private LayerMask obstacleLayerMask;
+    [SerializeField] private List<ExplosiveBarrel> linkedBarrels;
 
-    [Header("Sequence Completion")]
-    [SerializeField] private GameObject objectToMove;
-    [SerializeField] private Transform finalPlacement;
-    [SerializeField] private float moveDuration = 2f;
+    [Header("Platform Settings")]
+    [SerializeField] private GameObject platformToRise;
+    [SerializeField] private Transform platformFinalPlacement;
+    [SerializeField] private float platformMoveSpeed = 2f;
 
-    [Header("Wrong Sequence Feedback")]
-    [SerializeField] private Color wrongColor = Color.red;
-    [SerializeField] private float wrongBlinkIntensity = 5f;
-    [SerializeField] private float wrongBlinkSpeed = 5f;
-
-    private bool isActivated = false;
-    private Coroutine blinkCoroutine;
+    private bool hasExploded = false;
 
     public void OnArrowHit(TPVPlayerCombat.ArrowType arrowType)
     {
-        if (isActivated) return;
-
-        if (arrowType == requiredArrowType)
-        {
-            ActivateTarget();
-
-            if (nextTarget != null)
-            {
-                nextTarget.gameObject.SetActive(true);
-            }
-            else
-            {
-                if (objectToMove != null && finalPlacement != null)
-                {
-                    StartCoroutine(MoveObjectToPosition(objectToMove, finalPlacement.position.y, moveDuration));
-                }
-            }
-        }
-        else
-        {
-            StartCoroutine(WrongSequenceFeedback());
-        }
+        if (arrowType == TPVPlayerCombat.ArrowType.Pyro && !hasExploded)
+            StartCoroutine(ExplodeAfterDelay());
     }
 
-    private void ActivateTarget()
+    private IEnumerator ExplodeAfterDelay()
     {
-        isActivated = true;
-        if (pointLight != null)
-        {
-            pointLight.enabled = true;
-            blinkCoroutine = StartCoroutine(BlinkLight());
-        }
+        yield return new WaitForSeconds(delayBeforeExplosion);
+        Explode();
     }
 
-    private IEnumerator BlinkLight()
+    private void Explode()
     {
-        Color originalColor = pointLight.color;
-        while (true)
+        if (hasExploded) return;
+        hasExploded = true;
+
+        if (explosionVFX != null)
+            Instantiate(explosionVFX, transform.position, Quaternion.identity);
+
+        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
+
+        foreach (Collider nearby in colliders)
         {
-            float intensity = Mathf.Lerp(blinkIntensityMin, blinkIntensityMax, Mathf.PingPong(Time.time * blinkSpeed, 1f));
-            pointLight.intensity = intensity;
-            pointLight.color = originalColor;
+            Rigidbody rb = nearby.GetComponent<Rigidbody>();
+            if (rb != null)
+                rb.AddExplosionForce(explosionForce, transform.position, explosionRadius);
+
+            ExplosiveBarrel barrel = nearby.GetComponent<ExplosiveBarrel>();
+            if (barrel != null && barrel != this && linkedBarrels.Contains(barrel))
+                barrel.OnArrowHit(TPVPlayerCombat.ArrowType.Pyro);
+
+            if (((1 << nearby.gameObject.layer) & obstacleLayerMask) != 0)
+            {
+                DestructibleObstacle obs = nearby.GetComponent<DestructibleObstacle>();
+                if (obs != null)
+                    obs.DestroyObstacle();
+            }
+        }
+
+        CheckAllBarrelsExploded();
+        Destroy(gameObject);
+    }
+
+    private void CheckAllBarrelsExploded()
+    {
+        foreach (var barrel in linkedBarrels)
+        {
+            if (barrel != null && !barrel.hasExploded)
+                return;
+        }
+
+        if (platformToRise != null && platformFinalPlacement != null)
+            StartCoroutine(RaisePlatform());
+    }
+
+    private IEnumerator RaisePlatform()
+    {
+        Vector3 startPos = platformToRise.transform.position;
+        Vector3 endPos = new Vector3(startPos.x, platformFinalPlacement.position.y, startPos.z);
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * platformMoveSpeed;
+            platformToRise.transform.position = Vector3.Lerp(startPos, endPos, t);
             yield return null;
         }
-    }
-
-    private IEnumerator MoveObjectToPosition(GameObject obj, float targetY, float duration)
-    {
-        float elapsed = 0f;
-        Vector3 startPos = obj.transform.position;
-        Vector3 targetPos = new Vector3(startPos.x, targetY, startPos.z);
-
-        while (elapsed < duration)
-        {
-            obj.transform.position = Vector3.Lerp(startPos, targetPos, elapsed / duration);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        obj.transform.position = targetPos;
-    }
-
-    private IEnumerator WrongSequenceFeedback()
-    {
-        StopAllCoroutines();
-        isActivated = false;
-
-        Light[] lightsInChain = GetComponentsInChildren<Light>();
-        float elapsed = 0f;
-        float duration = 1f;
-
-        while (elapsed < duration)
-        {
-            float intensity = Mathf.Lerp(wrongBlinkIntensity, 0f, elapsed / duration);
-            foreach (Light l in lightsInChain)
-            {
-                l.color = wrongColor;
-                l.intensity = intensity;
-            }
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        foreach (Light l in lightsInChain)
-        {
-            l.intensity = 0f;
-        }
-
-        if (nextTarget != null)
-            nextTarget.ResetChain();
-    }
-
-    public void ResetChain()
-    {
-        isActivated = false;
-        if (pointLight != null)
-        {
-            pointLight.enabled = false;
-            if (blinkCoroutine != null)
-                StopCoroutine(blinkCoroutine);
-        }
-
-        if (nextTarget != null)
-            nextTarget.ResetChain();
+        platformToRise.transform.position = endPos;
     }
 }
