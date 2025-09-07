@@ -7,7 +7,9 @@ public enum GameScene
     Persistent,
     MainMenu,
     Gameplay,
-    LoadingScreen
+    LoadingScreen,
+    Level1,
+    Level2
 }
 
 public class GameSceneManager : MonoBehaviour
