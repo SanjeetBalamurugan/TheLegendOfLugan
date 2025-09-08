@@ -50,6 +50,7 @@ Shader "Custom/URP/GlitchTextShader"
                 return o;
             }
 
+            // Random function to generate glitch offset based on time
             float rand(float2 co)
             {
                 return frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453);
@@ -59,14 +60,18 @@ Shader "Custom/URP/GlitchTextShader"
             {
                 float2 uv = i.uv;
 
-                // glitch distortion (horizontal jitter)
-                float glitchOffset = (rand(float2(floor(uv.y * 100.0), _Time.y)) - 0.5) * 0.1 * _GlitchStrength;
+                // Time-based glitch distortion
+                float glitchStrength = _GlitchStrength * 0.1;  // Adjust the glitch strength multiplier
+                float glitchOffset = (rand(float2(floor(uv.y * 100.0), _Time.y)) - 0.5) * glitchStrength;
+
+                // Apply glitch offset to the UV coordinates
                 uv.x += glitchOffset;
 
-                // chromatic aberration (RGB split)
+                // Chromatic aberration (RGB split)
                 float2 uvR = uv + float2(0.002 * _GlitchStrength, 0);
                 float2 uvB = uv - float2(0.002 * _GlitchStrength, 0);
 
+                // Sample the texture at the modified UVs
                 float r = tex2D(_MainTex, uvR).r;
                 float g = tex2D(_MainTex, uv).g;
                 float b = tex2D(_MainTex, uvB).b;
@@ -74,7 +79,7 @@ Shader "Custom/URP/GlitchTextShader"
 
                 fixed4 col = float4(r, g, b, a);
 
-                // apply tint
+                // Apply tint color
                 col.rgb *= _TintColor.rgb;
                 col.a *= _TintColor.a;
 
