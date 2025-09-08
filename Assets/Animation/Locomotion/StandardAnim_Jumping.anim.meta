@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/levels/Level3.unity.meta
+guid: ad7b503d14f301c4f93a0ed458ca7d61
+DefaultImporter:
+========
 guid: 60c688105755d0f4da571bd99dade3ef
 NativeFormatImporter:
+>>>>>>>> master:Assets/Animation/Locomotion/StandardAnim_Jumping.anim.meta
   externalObjects: {}
   mainObjectFileID: 7400000
   userData: 
