@@ -95,7 +95,7 @@ public class LevelUIManager : MonoBehaviour
         if (settingsMenuPrefab == null) return;
 
         settingsMenuPrefab.SetActive(true);
-        if (pauseMenuPrefab != null && useAnim == false)
+        if (pauseMenuPrefab != null)
             pauseMenuPrefab.SetActive(false);
     }
 
