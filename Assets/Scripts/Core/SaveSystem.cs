@@ -2,6 +2,12 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+public enum SaveType
+{
+    Settings,
+    Progress,
+}
+
 public static class SaveSystem
 {
     private static string GetPath(SaveType type)
