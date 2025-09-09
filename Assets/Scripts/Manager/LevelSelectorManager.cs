@@ -1,32 +1,65 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
-public class LevelSelectorManager : MonoBehaviour
+public class LoadingScreenManager : MonoBehaviour
 {
-    [Header("Level Buttons")]
-    [SerializeField] private Button level1Button;
-    [SerializeField] private Button level2Button;
+    public static LoadingScreenManager Instance;
 
-    [Header("Game Manager Reference")]
-    [SerializeField] private GameSceneManager gameManager;
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private Image progressFill;
+    [SerializeField] private Text progressText;
+    [SerializeField] private float fadeDuration = 0.5f;
 
-    private void Start()
+    public bool IsFullyVisible { get; private set; }
+    public bool IsFullyHidden { get; private set; }
+
+    private void Awake()
     {
-        if (level1Button != null)
-            level1Button.onClick.AddListener(() => LoadLevel(GameScene.Level1));
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
 
-        if (level2Button != null)
-            level2Button.onClick.AddListener(() => LoadLevel(GameScene.Level2));
+        canvasGroup.alpha = 0f;
+        IsFullyHidden = true;
+        IsFullyVisible = false;
     }
 
-    private void LoadLevel(GameScene scene)
+    public void SetProgress(float value)
     {
-        if (gameManager == null)
-        {
-            Debug.LogError("GameSceneManager reference is missing!");
-            return;
-        }
+        float percent = Mathf.Clamp01(value) * 100f;
+        if (progressFill != null) progressFill.fillAmount = value;
+        if (progressText != null) progressText.text = $"{percent:0}%";
+    }
 
-        gameManager.LoadScene(scene, true);
+    public void FadeIn()
+    {
+        StopAllCoroutines();
+        StartCoroutine(FadeCanvas(1f));
+    }
+
+    public void FadeOut()
+    {
+        StopAllCoroutines();
+        StartCoroutine(FadeCanvas(0f));
+    }
+
+    private IEnumerator FadeCanvas(float target)
+    {
+        float start = canvasGroup.alpha;
+        float elapsed = 0f;
+        IsFullyHidden = false;
+        IsFullyVisible = false;
+
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            canvasGroup.alpha = Mathf.Lerp(start, target, elapsed / fadeDuration);
+            yield return null;
+        }
+        canvasGroup.alpha = target;
+
+        IsFullyVisible = target == 1f;
+        IsFullyHidden = target == 0f;
     }
 }
