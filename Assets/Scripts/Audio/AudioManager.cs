@@ -141,4 +141,12 @@ public class AudioManager : MonoBehaviour
         uiVolume = PlayerPrefs.GetFloat("UIVol", 1f);
         ApplyVolumes();
     }
+
+    public float GetVolume(string key) {
+        return PlayerPrefs.GetFloat(key, 1f);
+    }
+    public void SetVolume(string key, float value) {
+        PlayerPrefs.SetFloat(key, value);
+        PlayerPrefs.Save();
+    }
 }

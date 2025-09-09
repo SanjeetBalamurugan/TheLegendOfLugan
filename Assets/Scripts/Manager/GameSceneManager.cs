@@ -6,20 +6,23 @@ public enum GameScene
 {
     Persistent,
     MainMenu,
-    Gameplay,
-    LoadingScreen
+    LoadingScreen,
+    Level1,
+    Level2
 }
 
 public class GameSceneManager : MonoBehaviour
 {
     [SerializeField] private bool useLoadingScreen = true;
-    [SerializeField] private GameScene nextSceneToLoad;
+    private GameScene nextSceneToLoad;
+    [SerializeField] private GameScene currentScene;
 
     public static event System.Action<GameScene> OnSceneLoaded;
 
     private void Start()
     {
-        StartCoroutine(LoadGameSequence());
+        // Load settings automatically at startup
+        LoadSettingsData();
     }
 
     private IEnumerator LoadGameSequence()
@@ -41,11 +44,13 @@ public class GameSceneManager : MonoBehaviour
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
+        SceneManager.UnloadSceneAsync(currentScene.ToString());
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         while (!loadOp.isDone)
             yield return null;
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
+
         OnSceneLoaded?.Invoke(scene);
     }
 
@@ -64,11 +69,39 @@ public class GameSceneManager : MonoBehaviour
 
     public void QuitToMainMenu()
     {
+        // Save settings before quitting
+        SaveSettingsData();
         LoadScene(GameScene.MainMenu, true);
     }
 
     public GameScene GetCurrentScene()
     {
         return (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
+    }
+
+    // --- SAVE/LOAD HOOKS ---
+    private void SaveSettingsData()
+    {
+        // Example: pull data from AudioManager
+        float bgm = PlayerPrefs.GetFloat("BGMVol", 1f);
+        float ui = PlayerPrefs.GetFloat("UIVol", 1f);
+        int quality = QualitySettings.GetQualityLevel();
+
+        var data = new SettingsSaveData(bgm, ui, quality);
+        SaveSystem.Save(SaveType.Settings, data);
+    }
+
+    private void LoadSettingsData()
+    {
+        SettingsSaveData data = SaveSystem.Load<SettingsSaveData>(SaveType.Settings);
+        if (data != null)
+        {
+            // Apply audio
+            AudioManager.Instance.SetBGMVolume(data.bgmVolume);
+            AudioManager.Instance.SetUIVolume(data.uiVolume);
+
+            // Apply graphics
+            QualitySettings.SetQualityLevel(data.qualityPreset, true);
+        }
     }
 }

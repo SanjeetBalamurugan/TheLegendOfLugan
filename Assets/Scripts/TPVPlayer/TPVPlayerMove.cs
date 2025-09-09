@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cinemachine;
 
 public class TPVPlayerMove : MonoBehaviour
 {
@@ -7,13 +8,14 @@ public class TPVPlayerMove : MonoBehaviour
     public float moveSpeed = 5f;
     public float runSpeed = 8f;
     public float turnSmoothTime = 0.1f;
-    float turnSmoothVelocity;
+    private float turnSmoothVelocity;
     public GameObject playerCam;
+    public GameObject aimCam;
     public Camera actualCam;
 
     [Header("Player GroundCheck")]
     public Transform groundCheck;
-    public float groundDistance = 0.4f; 
+    public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
     private Vector3 velocity;
@@ -26,43 +28,60 @@ public class TPVPlayerMove : MonoBehaviour
     [Header("Player Animation")]
     [SerializeField] private Animator animator;
 
-    private static readonly int IdleAnim  = Animator.StringToHash("Player_Idle");
-    private static readonly int WalkAnim  = Animator.StringToHash("Walking");
-    private static readonly int RunAnim   = Animator.StringToHash("StandardAnim_Running");
-    private static readonly int JumpAnim  = Animator.StringToHash("Jumping");
+    private static readonly int IdleAnim = Animator.StringToHash("Player_Idle");
+    private static readonly int WalkAnim = Animator.StringToHash("Walking");
+    private static readonly int RunAnim = Animator.StringToHash("StandardAnim_Running");
+    private static readonly int JumpAnim = Animator.StringToHash("Jumping");
 
     private int currentAnimState;
 
     [Header("Player Aim")]
-    [SerializeField] private GameObject aimCam;
     private bool isAiming;
     private bool lastAimingState = false;
 
     [Header("Player Aim Rotation Settings")]
-    [SerializeField] private Vector3 playerAimRotation; // rotation offset while aiming
-    [SerializeField] private Transform playerModel;     // the visible character model
-    [SerializeField] private float aimRotateSpeed = 5f; // how fast rotation interpolates
+    [SerializeField] private Vector3 playerAimRotation;
+    [SerializeField] private Transform playerModel;
+    [SerializeField] private float aimRotateSpeed = 5f;
 
     private Quaternion defaultRotationOffset;
     private Quaternion aimRotationOffset;
+
+    [Header("Camera Blending")]
+    [SerializeField] private int normalCamPriority = 10;
+    [SerializeField] private int aimCamPriority = 20;
+    [SerializeField] private float camBlendTime = 0.5f;
+
+    private CinemachineFreeLook playerFreeLook;
+    private CinemachineFreeLook aimFreeLook;
 
     private const string HorizontalAxis = "Horizontal";
     private const string VerticalAxis = "Vertical";
 
     private void Start()
     {
-        aimCam.SetActive(false);
+        playerFreeLook = playerCam.GetComponent<CinemachineFreeLook>();
+        aimFreeLook = aimCam.GetComponent<CinemachineFreeLook>();
+
+        aimCam.SetActive(true);
         playerCam.SetActive(true);
+        playerFreeLook.Priority = normalCamPriority;
+        aimFreeLook.Priority = normalCamPriority - 1;
 
         currentAnimState = IdleAnim;
         animator.Play(currentAnimState);
 
-        // store default & aiming rotations
         defaultRotationOffset = Quaternion.identity;
         aimRotationOffset = Quaternion.Euler(playerAimRotation);
+
+        CinemachineBrain brain = Camera.main.GetComponent<CinemachineBrain>();
+        if (brain != null)
+            brain.m_DefaultBlend.m_Time = camBlendTime;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
+    private void Update()
     {
         isGrounded = controller.isGrounded;
 
@@ -79,7 +98,6 @@ public class TPVPlayerMove : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    // --- AIMING ---
     private void HandleAiming(bool isRunning)
     {
         if (isAiming != lastAimingState)
@@ -92,7 +110,6 @@ public class TPVPlayerMove : MonoBehaviour
             lastAimingState = isAiming;
         }
 
-        // Smooth model rotation while aiming / not aiming
         if (playerModel != null)
         {
             Quaternion targetRot = isAiming ? aimRotationOffset : defaultRotationOffset;
@@ -106,19 +123,18 @@ public class TPVPlayerMove : MonoBehaviour
 
     private void OnAimStart()
     {
-        aimCam.SetActive(true);
-        playerCam.SetActive(false);
+        playerFreeLook.Priority = normalCamPriority;
+        aimFreeLook.Priority = aimCamPriority;
         animator.SetLayerWeight(1, 1f);
     }
 
     private void OnAimEnd()
     {
-        aimCam.SetActive(false);
-        playerCam.SetActive(true);
+        aimFreeLook.Priority = normalCamPriority;
+        playerFreeLook.Priority = aimCamPriority;
         animator.SetLayerWeight(1, 0f);
     }
 
-    // --- JUMPING ---
     private void HandleJump()
     {
         if (isGrounded && Input.GetButtonDown("Jump"))
@@ -136,7 +152,6 @@ public class TPVPlayerMove : MonoBehaviour
             velocity.y += gravity * Time.deltaTime;
     }
 
-    // --- MOVEMENT ---
     private void HandleMovement(float horizontal, float vertical, bool isRunning)
     {
         if (isAiming)
@@ -151,9 +166,9 @@ public class TPVPlayerMove : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg 
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg
                                 + actualCam.transform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, 
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
                                                 ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
@@ -177,7 +192,7 @@ public class TPVPlayerMove : MonoBehaviour
     {
         transform.rotation = Quaternion.Euler(0f, actualCam.transform.eulerAngles.y, 0f);
 
-        Vector3 moveDir = (actualCam.transform.forward * vertical 
+        Vector3 moveDir = (actualCam.transform.forward * vertical
                          + actualCam.transform.right * horizontal).normalized;
 
         if (moveDir.magnitude >= 0.1f)
@@ -191,15 +206,13 @@ public class TPVPlayerMove : MonoBehaviour
         }
     }
 
-    // --- ANIMATION ---
     private void ChangeAnimationState(int newState)
     {
-        if (currentAnimState == newState) return; 
-        animator.CrossFade(newState, 0.15f); // smoother transition
+        if (currentAnimState == newState) return;
+        animator.CrossFade(newState, 0.15f);
         currentAnimState = newState;
     }
 
-    // --- GETTERS ---
     public bool IsGrounded() => isGrounded;
     public float GetGravity() => gravity;
     public bool GetAimValue() => isAiming;
