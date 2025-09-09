@@ -4,6 +4,7 @@ using System.Collections;
 
 public enum GameScene
 {
+    None,          // added to avoid default 0 bug
     Persistent,
     MainMenu,
     LoadingScreen,
@@ -15,7 +16,7 @@ public class GameSceneManager : MonoBehaviour
 {
     [SerializeField] private bool useLoadingScreen = true;
     private GameScene nextSceneToLoad;
-    [SerializeField] private GameScene currentScene;
+    [SerializeField] private GameScene currentScene = GameScene.None;
 
     public static event System.Action<GameScene> OnSceneLoaded;
 
@@ -27,14 +28,20 @@ public class GameSceneManager : MonoBehaviour
 
     private IEnumerator LoadGameSequence()
     {
+        // Ensure Persistent is always loaded
         if (!SceneManager.GetSceneByName(GameScene.Persistent.ToString()).isLoaded)
             yield return SceneManager.LoadSceneAsync(GameScene.Persistent.ToString(), LoadSceneMode.Additive);
 
         if (useLoadingScreen)
         {
+            // Load the loading screen
             yield return SceneManager.LoadSceneAsync(GameScene.LoadingScreen.ToString(), LoadSceneMode.Additive);
+
+            // Load the actual scene
             yield return StartCoroutine(LoadNextSceneAsync(nextSceneToLoad));
-            SceneManager.UnloadSceneAsync(GameScene.LoadingScreen.ToString());
+
+            // Unload the loading screen
+            yield return SceneManager.UnloadSceneAsync(GameScene.LoadingScreen.ToString());
         }
         else
         {
@@ -44,13 +51,22 @@ public class GameSceneManager : MonoBehaviour
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
-        SceneManager.UnloadSceneAsync(currentScene.ToString());
+        // Don’t unload if first load or if last scene was LoadingScreen
+        if (currentScene != GameScene.None && currentScene != GameScene.LoadingScreen)
+            yield return SceneManager.UnloadSceneAsync(currentScene.ToString());
+
+        // Start loading the new scene
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         while (!loadOp.isDone)
             yield return null;
 
+        // Set it as the active scene
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
 
+        // Update tracker
+        currentScene = scene;
+
+        // Notify listeners
         OnSceneLoaded?.Invoke(scene);
     }
 
@@ -63,7 +79,6 @@ public class GameSceneManager : MonoBehaviour
 
     public void ReloadCurrentScene()
     {
-        GameScene currentScene = (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
         LoadScene(currentScene, useLoadingScreen);
     }
 
@@ -76,7 +91,7 @@ public class GameSceneManager : MonoBehaviour
 
     public GameScene GetCurrentScene()
     {
-        return (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
+        return currentScene;
     }
 
     // --- SAVE/LOAD HOOKS ---
