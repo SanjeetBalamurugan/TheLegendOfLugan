@@ -11,13 +11,13 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // Subscribe to scene loading
+        
         GameSceneManager.OnSceneLoaded += HandleSceneLoaded;
     }
 
     private void OnDisable()
     {
-        // Unsubscribe to avoid memory leaks
+        
         GameSceneManager.OnSceneLoaded -= HandleSceneLoaded;
     }
 
@@ -35,13 +35,13 @@ public class LoadingScreenManager : MonoBehaviour
         if (fillImage != null) fillImage.fillAmount = 0f;
         if (percentageText != null) percentageText.text = "0%";
 
-        // Begin async loading
+        
         AsyncOperation op = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
-        op.allowSceneActivation = false; // Control when the scene is activated
+        op.allowSceneActivation = false; 
 
         while (!op.isDone)
         {
-            // Progress is capped at 0.9f until scene is ready
+            
             float progress = Mathf.Clamp01(op.progress / 0.9f);
 
             if (fillImage != null)
@@ -50,7 +50,7 @@ public class LoadingScreenManager : MonoBehaviour
             if (percentageText != null)
                 percentageText.text = Mathf.RoundToInt(progress * 100f) + "%";
 
-            // If fully loaded, activate scene
+            
             if (progress >= 1f)
                 op.allowSceneActivation = true;
 
@@ -60,7 +60,7 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void HandleSceneLoaded(GameScene scene)
     {
-        // Optional: Hide or disable the loading UI when the new scene is ready
+        
         gameObject.SetActive(false);
     }
 }
