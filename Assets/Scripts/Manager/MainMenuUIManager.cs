@@ -14,12 +14,54 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField] private float menuFadeDuration = 1f;
     [SerializeField] private string mainMenuBGMKey = "MainMenuTheme";
 
+    [Header("LevelSelectorUI")]
+    [SerializeField] private GameObject levelSelectorUI;
+    [SerializeField] private Button backButton;
+
+    [Header("Fade Settings")]
+    [SerializeField] private bool useAnim = true;
+    [SerializeField] private float fadeDuration = 0.3f;
+
     private CanvasGroup splashCanvas;
     private CanvasGroup menuCanvas;
+    private CanvasGroup levelSelectorUICanvas;
+
+    private bool canvasLoaded = false;
+    private bool handleUIInput = true;
 
     private void Start()
     {
+        if (levelSelectorUI != null)
+        {
+            levelSelectorUICanvas = levelSelectorUI.GetComponent<CanvasGroup>();
+            if (levelSelectorUICanvas == null)
+                levelSelectorUICanvas = levelSelectorUI.AddComponent<CanvasGroup>();
+            levelSelectorUI.SetActive(false);
+            levelSelectorUICanvas.alpha = 0f;
+        }
+
+        if (backButton != null)
+            backButton.onClick.AddListener(BackToMainMenu);
+
         StartCoroutine(ShowSplashThenMenu());
+    }
+
+    private void Update()
+    {
+        if (canvasLoaded && handleUIInput) HandleUIInput();
+    }
+
+    private void HandleUIInput()
+    {
+        if(Input.anyKey)
+        {
+            if (useAnim)
+                StartCoroutine(FadeCanvasGroup(levelSelectorUICanvas, 0f, 1f, fadeDuration));
+            else
+                levelSelectorUI.SetActive(true);
+            handleUIInput = false;
+            Debug.Log("KeyPressed");
+        }
     }
 
     private IEnumerator ShowSplashThenMenu()
@@ -67,5 +109,52 @@ public class MainMenuUIManager : MonoBehaviour
         }
 
         AudioManager.Instance.PlayBGM(mainMenuBGMKey, 1f);
+        canvasLoaded = true;
+    }
+
+    private IEnumerator FadeCanvasGroup(CanvasGroup cg, float start, float end, float duration, System.Action onComplete = null)
+    {
+        if (cg == null) yield break;
+
+        cg.gameObject.SetActive(true);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            cg.alpha = Mathf.Lerp(start, end, elapsed / duration);
+            yield return null;
+        }
+        cg.alpha = end;
+        onComplete?.Invoke();
+    }
+
+    private IEnumerator FadeCanvasGroupOP(CanvasGroup cg, float start, float end, float duration, System.Action onComplete = null)
+    {
+        if (cg == null) yield break;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            cg.alpha = Mathf.Lerp(start, end, elapsed / duration);
+            yield return null;
+        }
+        cg.alpha = end;
+        cg.gameObject.SetActive(false);
+
+        onComplete?.Invoke();
+    }
+
+    public void BackToMainMenu()
+    {
+        if (useAnim)
+            StartCoroutine(FadeCanvasGroupOP(levelSelectorUICanvas, 1f, 0f, fadeDuration));
+        else
+            levelSelectorUI.SetActive(true);
+    }
+
+    public void SetUIInput(bool _val)
+    {
+        handleUIInput = _val;
     }
 }

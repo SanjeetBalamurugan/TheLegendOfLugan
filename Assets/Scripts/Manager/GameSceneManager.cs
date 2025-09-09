@@ -14,7 +14,8 @@ public enum GameScene
 public class GameSceneManager : MonoBehaviour
 {
     [SerializeField] private bool useLoadingScreen = true;
-    [SerializeField] private GameScene nextSceneToLoad;
+    private GameScene nextSceneToLoad;
+    [SerializeField] private GameScene currentScene;
 
     public static event System.Action<GameScene> OnSceneLoaded;
 
@@ -22,7 +23,6 @@ public class GameSceneManager : MonoBehaviour
     {
         // Load settings automatically at startup
         LoadSettingsData();
-        StartCoroutine(LoadGameSequence());
     }
 
     private IEnumerator LoadGameSequence()
@@ -44,18 +44,12 @@ public class GameSceneManager : MonoBehaviour
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
+        SceneManager.UnloadSceneAsync(currentScene.ToString());
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         while (!loadOp.isDone)
             yield return null;
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
-
-        // Save progress when entering a new level
-        if (scene == GameScene.Level1 || scene == GameScene.Level2)
-        {
-            ProgressSaveData prog = new ProgressSaveData(scene == GameScene.Level1 ? 1 : 2);
-            SaveSystem.Save(SaveType.Progress, prog);
-        }
 
         OnSceneLoaded?.Invoke(scene);
     }

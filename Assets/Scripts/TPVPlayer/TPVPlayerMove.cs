@@ -77,6 +77,8 @@ public class TPVPlayerMove : MonoBehaviour
         CinemachineBrain brain = Camera.main.GetComponent<CinemachineBrain>();
         if (brain != null)
             brain.m_DefaultBlend.m_Time = camBlendTime;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
