@@ -5,22 +5,12 @@ public class AudioManagerWindow : EditorWindow
 {
     private SoundData soundData;
     private Vector2 scrollPos;
-    private AudioSource previewSource;
+    private AudioClip previewClip;
 
     [MenuItem("Window/Audio Manager")]
     public static void ShowWindow()
     {
         GetWindow<AudioManagerWindow>("Audio Manager");
-    }
-
-    private void OnEnable()
-    {
-        if (!previewSource)
-        {
-            GameObject go = new GameObject("AudioPreviewSource");
-            go.hideFlags = HideFlags.HideAndDontSave;
-            previewSource = go.AddComponent<AudioSource>();
-        }
     }
 
     private void OnGUI()
@@ -45,7 +35,7 @@ public class AudioManagerWindow : EditorWindow
 
             if (GUILayout.Button("▶️ Play", GUILayout.Width(60)))
             {
-                PlayClip(sound.clip, sound.volume, sound.pitch);
+                PlayClip(sound.clip);
             }
 
             if (GUILayout.Button("⏹ Stop", GUILayout.Width(60)))
@@ -60,20 +50,17 @@ public class AudioManagerWindow : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    private void PlayClip(AudioClip clip, float volume, float pitch)
+    private void PlayClip(AudioClip clip)
     {
         if (clip == null) return;
-        previewSource.pitch = pitch;
-        previewSource.volume = volume;
-        previewSource.clip = clip;
-        previewSource.Play();
+        StopClip();
+        previewClip = clip;
+        EditorUtility.PlayPreviewClip(previewClip);
     }
 
     private void StopClip()
     {
-        if (previewSource.isPlaying)
-        {
-            previewSource.Stop();
-        }
+        if (previewClip != null)
+            EditorUtility.StopPreviewClip();
     }
 }
