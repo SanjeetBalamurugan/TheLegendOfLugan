@@ -13,15 +13,22 @@ public class PolyDirectionalPlatformButton : MonoBehaviour, IArrowInteractable
     [SerializeField] private bool moveX = false;
     [SerializeField] private bool moveY = true;
     [SerializeField] private bool moveZ = false;
+    [SerializeField] private TPVPlayerCombat.ArrowType trigger = TPVPlayerCombat.ArrowType.Physical;
+    [SerializeField] private GameObject explosion;
 
+    private bool isHit = false;
     private Dictionary<GameObject, Coroutine> activeMoves = new();
 
     public void OnArrowHit(TPVPlayerCombat.ArrowType arrowType)
     {
         foreach (GameObject platform in platformObjects)
         {
-            if (activeMoves.ContainsKey(platform) && activeMoves[platform] != null)
+            if (activeMoves.ContainsKey(platform) && activeMoves[platform] != null && trigger == arrowType)
+            {
                 StopCoroutine(activeMoves[platform]);
+                Instantiate(explosion, this.transform);
+                Destroy(this.gameObject);
+            }
 
             activeMoves[platform] = StartCoroutine(MovePlatform(platform));
         }

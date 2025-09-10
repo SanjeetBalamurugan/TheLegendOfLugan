@@ -74,7 +74,7 @@ public class TPVPlayerMove : MonoBehaviour
         defaultRotationOffset = Quaternion.identity;
         aimRotationOffset = Quaternion.Euler(playerAimRotation);
 
-        CinemachineBrain brain = Camera.main.GetComponent<CinemachineBrain>();
+        CinemachineBrain brain = actualCam.GetComponent<CinemachineBrain>();
         if (brain != null)
             brain.m_DefaultBlend.m_Time = camBlendTime;
 
