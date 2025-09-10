@@ -1,66 +1,65 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class LoadingScreenManager : MonoBehaviour
 {
-    [Header("UI References")]
-    [SerializeField] private Image fillImage;         // The masked/fillable image
-    [SerializeField] private Text percentageText;     // The percentage text
+    public static LoadingScreenManager Instance;
 
-    private void OnEnable()
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private Image progressFill;
+    [SerializeField] private Text progressText;
+    [SerializeField] private float fadeDuration = 0.5f;
+
+    public bool IsFullyVisible { get; private set; }
+    public bool IsFullyHidden { get; private set; }
+
+    private void Awake()
     {
-        
-        GameSceneManager.OnSceneLoaded += HandleSceneLoaded;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
+
+        canvasGroup.alpha = 0f;
+        IsFullyHidden = true;
+        IsFullyVisible = false;
     }
 
-    private void OnDisable()
+    public void SetProgress(float value)
     {
-        
-        GameSceneManager.OnSceneLoaded -= HandleSceneLoaded;
+        float percent = Mathf.Clamp01(value) * 100f;
+        if (progressFill != null) progressFill.fillAmount = value;
+        if (progressText != null) progressText.text = $"{percent:0}%";
     }
 
-    /// <summary>
-    /// Starts the loading bar process when GameSceneManager begins loading.
-    /// </summary>
-    public void StartLoading(GameScene sceneToLoad)
+    public void FadeIn()
     {
-        StartCoroutine(LoadSceneAsync(sceneToLoad));
+        StopAllCoroutines();
+        StartCoroutine(FadeCanvas(1f));
     }
 
-    private IEnumerator LoadSceneAsync(GameScene scene)
+    public void FadeOut()
     {
-        // Reset UI
-        if (fillImage != null) fillImage.fillAmount = 0f;
-        if (percentageText != null) percentageText.text = "0%";
+        StopAllCoroutines();
+        StartCoroutine(FadeCanvas(0f));
+    }
 
-        
-        AsyncOperation op = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
-        op.allowSceneActivation = false; 
+    private IEnumerator FadeCanvas(float target)
+    {
+        float start = canvasGroup.alpha;
+        float elapsed = 0f;
+        IsFullyHidden = false;
+        IsFullyVisible = false;
 
-        while (!op.isDone)
+        while (elapsed < fadeDuration)
         {
-            
-            float progress = Mathf.Clamp01(op.progress / 0.9f);
-
-            if (fillImage != null)
-                fillImage.fillAmount = progress;
-
-            if (percentageText != null)
-                percentageText.text = Mathf.RoundToInt(progress * 100f) + "%";
-
-            
-            if (progress >= 1f)
-                op.allowSceneActivation = true;
-
+            elapsed += Time.unscaledDeltaTime;
+            canvasGroup.alpha = Mathf.Lerp(start, target, elapsed / fadeDuration);
             yield return null;
         }
-    }
+        canvasGroup.alpha = target;
 
-    private void HandleSceneLoaded(GameScene scene)
-    {
-        
-        gameObject.SetActive(false);
+        IsFullyVisible = target == 1f;
+        IsFullyHidden = target == 0f;
     }
 }
