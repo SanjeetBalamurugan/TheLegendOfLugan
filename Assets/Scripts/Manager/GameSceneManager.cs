@@ -60,13 +60,35 @@ public class GameSceneManager : MonoBehaviour
         if (!Application.CanStreamedLevelBeLoaded(scene.ToString()))
             yield break;
 
+        if (LoadingScreenManager.Instance != null)
+            LoadingScreenManager.Instance.FadeIn();
+
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
+        loadOp.allowSceneActivation = false;
+
+        while (loadOp.progress < 0.9f)
+        {
+            if (LoadingScreenManager.Instance != null)
+                LoadingScreenManager.Instance.SetProgress(loadOp.progress);
+            yield return null;
+        }
+
+        if (LoadingScreenManager.Instance != null)
+            LoadingScreenManager.Instance.SetProgress(1f);
+
+        loadOp.allowSceneActivation = true;
+
         while (!loadOp.isDone)
             yield return null;
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
         currentScene = scene;
+
         yield return null;
+
+        if (LoadingScreenManager.Instance != null)
+            LoadingScreenManager.Instance.FadeOut();
+
         OnSceneLoaded?.Invoke(scene);
     }
 
