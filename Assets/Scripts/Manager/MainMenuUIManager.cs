@@ -77,8 +77,7 @@ public class MainMenuUIManager : MonoBehaviour
             // Play transition animation
             if (mainMenuAnimator != null)
                 mainMenuAnimator.SetTrigger("GoToPortal");
-            else
-                ShowLevelSelector(); // fallback if animator not set
+            ShowLevelSelector(); // fallback if animator not set
 
             handleUIInput = false;
         }
