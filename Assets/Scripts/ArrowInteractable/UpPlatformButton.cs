@@ -7,18 +7,13 @@ public class UpPlatformButton : MonoBehaviour, IArrowInteractable
     [SerializeField] private string objectName = "Interactive Object";
     [SerializeField] private Transform finalPlacement;
     [SerializeField] private List<GameObject> platformObjects;
-    [SerializeField] private float moveDuration = 1f;
-
-    private Dictionary<GameObject, Coroutine> activeMoves = new();
+    [SerializeField] private float moveSmoothness = 1f;
 
     public void OnArrowHit(TPVPlayerCombat.ArrowType arrowType)
     {
         foreach (GameObject platform in platformObjects)
         {
-            if (activeMoves.ContainsKey(platform) && activeMoves[platform] != null)
-                StopCoroutine(activeMoves[platform]);
-
-            activeMoves[platform] = StartCoroutine(MovePlatform(platform));
+            StartCoroutine(MovePlatform(platform));
         }
     }
 
@@ -28,17 +23,13 @@ public class UpPlatformButton : MonoBehaviour, IArrowInteractable
         Vector3 targetPos = new Vector3(startPos.x, finalPlacement.position.y, startPos.z);
 
         float elapsed = 0f;
-        while (elapsed < moveDuration)
+        while (elapsed < moveSmoothness)
         {
-            float t = elapsed / moveDuration;
-            t = Mathf.SmoothStep(0f, 1f, t); // ease in-out
-            platform.transform.position = Vector3.Lerp(startPos, targetPos, t);
-
+            platform.transform.position = Vector3.Lerp(startPos, targetPos, elapsed / moveSmoothness);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         platform.transform.position = targetPos;
-        activeMoves[platform] = null;
     }
 }
