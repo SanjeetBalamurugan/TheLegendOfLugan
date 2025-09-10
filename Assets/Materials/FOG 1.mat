@@ -11,12 +11,13 @@ Material:
   m_Shader: {fileID: 4800000, guid: 0406db5a14f94604a8c57ccfbc9f3b46, type: 3}
   m_ValidKeywords:
   - _DISTORTION_ON
+  - _EMISSION
   - _FADING_ON
   - _SOFTPARTICLES_ON
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords:
   - _FLIPBOOKBLENDING_OFF
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
   m_CustomRenderQueue: 3000
@@ -128,11 +129,11 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.3760235, g: 0.4716981, b: 0.4716981, a: 0.9490196}
+    - _BaseColor: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 0.9490196}
     - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _CameraFadeParams: {r: 1, g: 1, b: 0, a: 0}
-    - _Color: {r: 0.37602347, g: 0.4716981, b: 0.4716981, a: 0.9490196}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 0.9490196}
+    - _EmissionColor: {r: 0.29707247, g: 0.29707247, b: 0.29707247, a: 1}
     - _SoftParticleFadeParams: {r: 1, g: 0.11111111, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
