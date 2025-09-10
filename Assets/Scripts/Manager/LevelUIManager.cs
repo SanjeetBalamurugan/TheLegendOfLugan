@@ -7,9 +7,6 @@ public class LevelUIManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private GameObject pauseMenuPrefab;
     [SerializeField] private GameObject settingsMenuPrefab;
-    [SerializeField] private Image elementIcon;
-    [SerializeField] private Text elementNameText;
-    [SerializeField] private TPVPlayerCombat playerCombat;
 
     [Header("Optional Buttons")]
     [SerializeField] private Button resumeButton;
@@ -20,24 +17,8 @@ public class LevelUIManager : MonoBehaviour
     [SerializeField] private bool useAnim = true;
     [SerializeField] private float fadeDuration = 0.3f;
 
-    [Header("Element Sprites")]
-    [SerializeField] private Sprite physicalSprite;
-    [SerializeField] private Sprite pyroSprite;
-    [SerializeField] private Sprite hydroSprite;
-    [SerializeField] private Sprite defaultElementSprite;
-    [SerializeField] private string defaultElementName = "None";
-
     private CanvasGroup pauseCanvasGroup;
     private bool isPaused = false;
-    private TPVPlayerCombat.ArrowType lastArrowType;
-
-    private void Awake()
-    {
-        if (playerCombat == null)
-            playerCombat = FindObjectOfType<TPVPlayerCombat>();
-
-        SetElementUI(defaultElementSprite, defaultElementName);
-    }
 
     private void Start()
     {
@@ -61,8 +42,6 @@ public class LevelUIManager : MonoBehaviour
 
         if (backButton != null)
             backButton.onClick.AddListener(BackToPauseMenu);
-
-        UpdateElementUI(playerCombat.GetArrowType());
     }
 
     private void Update()
@@ -74,21 +53,12 @@ public class LevelUIManager : MonoBehaviour
             else
                 OpenPauseMenu();
         }
-
-        if (playerCombat != null)
-        {
-            var currentArrow = playerCombat.GetArrowType();
-            if (currentArrow != lastArrowType)
-            {
-                UpdateElementUI(currentArrow);
-                lastArrowType = currentArrow;
-            }
-        }
     }
 
     public void OpenPauseMenu()
     {
         if (pauseMenuPrefab == null) return;
+
         if (settingsMenuPrefab != null)
             settingsMenuPrefab.SetActive(false);
 
@@ -96,9 +66,6 @@ public class LevelUIManager : MonoBehaviour
             StartCoroutine(FadeCanvasGroup(pauseCanvasGroup, 0f, 1f, fadeDuration));
         else
             pauseMenuPrefab.SetActive(true);
-
-        if (elementIcon != null) elementIcon.gameObject.SetActive(false);
-        if (elementNameText != null) elementNameText.gameObject.SetActive(false);
 
         Time.timeScale = 0f;
         isPaused = true;
@@ -119,9 +86,6 @@ public class LevelUIManager : MonoBehaviour
         if (settingsMenuPrefab != null)
             settingsMenuPrefab.SetActive(false);
 
-        if (elementIcon != null) elementIcon.gameObject.SetActive(true);
-        if (elementNameText != null) elementNameText.gameObject.SetActive(true);
-
         Time.timeScale = 1f;
         isPaused = false;
     }
@@ -138,6 +102,7 @@ public class LevelUIManager : MonoBehaviour
     public void BackToPauseMenu()
     {
         if (pauseMenuPrefab == null) return;
+
         if (settingsMenuPrefab != null)
             settingsMenuPrefab.SetActive(false);
 
@@ -161,35 +126,5 @@ public class LevelUIManager : MonoBehaviour
         }
         cg.alpha = end;
         onComplete?.Invoke();
-    }
-
-    public void UpdateElementUI(TPVPlayerCombat.ArrowType arrowType)
-    {
-        Sprite elementSprite = defaultElementSprite;
-        string elementName = defaultElementName;
-
-        switch (arrowType)
-        {
-            case TPVPlayerCombat.ArrowType.Physical:
-                elementSprite = physicalSprite;
-                elementName = "Physical";
-                break;
-            case TPVPlayerCombat.ArrowType.Pyro:
-                elementSprite = pyroSprite;
-                elementName = "Pyro";
-                break;
-            case TPVPlayerCombat.ArrowType.Hydro:
-                elementSprite = hydroSprite;
-                elementName = "Hydro";
-                break;
-        }
-
-        SetElementUI(elementSprite, elementName);
-    }
-
-    private void SetElementUI(Sprite sprite, string name)
-    {
-        if (elementIcon != null) elementIcon.sprite = sprite;
-        if (elementNameText != null) elementNameText.text = name;
     }
 }
