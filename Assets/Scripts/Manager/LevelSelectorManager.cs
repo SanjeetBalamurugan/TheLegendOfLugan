@@ -1,65 +1,32 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
-public class LoadingScreenManager : MonoBehaviour
+public class LevelSelectorManager : MonoBehaviour
 {
-    public static LoadingScreenManager Instance;
+    [Header("Level Buttons")]
+    [SerializeField] private Button level1Button;
+    [SerializeField] private Button level2Button;
 
-    [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private Image progressFill;
-    [SerializeField] private Text progressText;
-    [SerializeField] private float fadeDuration = 0.5f;
+    [Header("Game Manager Reference")]
+    [SerializeField] private GameSceneManager gameManager;
 
-    public bool IsFullyVisible { get; private set; }
-    public bool IsFullyHidden { get; private set; }
-
-    private void Awake()
+    private void Start()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
+        if (level1Button != null)
+            level1Button.onClick.AddListener(() => LoadLevel(GameScene.Level1));
 
-        canvasGroup.alpha = 0f;
-        IsFullyHidden = true;
-        IsFullyVisible = false;
+        if (level2Button != null)
+            level2Button.onClick.AddListener(() => LoadLevel(GameScene.Level2));
     }
 
-    public void SetProgress(float value)
+    private void LoadLevel(GameScene scene)
     {
-        float percent = Mathf.Clamp01(value) * 100f;
-        if (progressFill != null) progressFill.fillAmount = value;
-        if (progressText != null) progressText.text = $"{percent:0}%";
-    }
-
-    public void FadeIn()
-    {
-        StopAllCoroutines();
-        StartCoroutine(FadeCanvas(1f));
-    }
-
-    public void FadeOut()
-    {
-        StopAllCoroutines();
-        StartCoroutine(FadeCanvas(0f));
-    }
-
-    private IEnumerator FadeCanvas(float target)
-    {
-        float start = canvasGroup.alpha;
-        float elapsed = 0f;
-        IsFullyHidden = false;
-        IsFullyVisible = false;
-
-        while (elapsed < fadeDuration)
+        if (gameManager == null)
         {
-            elapsed += Time.unscaledDeltaTime;
-            canvasGroup.alpha = Mathf.Lerp(start, target, elapsed / fadeDuration);
-            yield return null;
+            Debug.LogError("GameSceneManager reference is missing!");
+            return;
         }
-        canvasGroup.alpha = target;
 
-        IsFullyVisible = target == 1f;
-        IsFullyHidden = target == 0f;
+        gameManager.LoadScene(scene, true);
     }
 }
