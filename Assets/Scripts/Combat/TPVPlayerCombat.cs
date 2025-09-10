@@ -46,10 +46,6 @@ public class TPVPlayerCombat : MonoBehaviour
         return false;
     }
 
-    public ArrowType GetArrowType() {
-        return currentArrowType;
-    }
-
     private int GetArrowCount(ArrowType type)
     {
         switch (type)
