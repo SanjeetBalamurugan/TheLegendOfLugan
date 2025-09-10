@@ -2,12 +2,17 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class UpPlatformButton : MonoBehaviour, IArrowInteractable
+public class PolyDirectionalPlatformButton : MonoBehaviour, IArrowInteractable
 {
-    [SerializeField] private string objectName = "Interactive Object";
+    [SerializeField] private string objectName = "PolyDirectional Platform";
     [SerializeField] private Transform finalPlacement;
     [SerializeField] private List<GameObject> platformObjects;
     [SerializeField] private float moveDuration = 1f;
+
+    [Header("Axis Movement Control")]
+    [SerializeField] private bool moveX = false;
+    [SerializeField] private bool moveY = true;
+    [SerializeField] private bool moveZ = false;
 
     private Dictionary<GameObject, Coroutine> activeMoves = new();
 
@@ -25,7 +30,11 @@ public class UpPlatformButton : MonoBehaviour, IArrowInteractable
     private IEnumerator MovePlatform(GameObject platform)
     {
         Vector3 startPos = platform.transform.position;
-        Vector3 targetPos = new Vector3(startPos.x, finalPlacement.position.y, startPos.z);
+        Vector3 targetPos = new Vector3(
+            moveX ? finalPlacement.position.x : startPos.x,
+            moveY ? finalPlacement.position.y : startPos.y,
+            moveZ ? finalPlacement.position.z : startPos.z
+        );
 
         float elapsed = 0f;
         while (elapsed < moveDuration)

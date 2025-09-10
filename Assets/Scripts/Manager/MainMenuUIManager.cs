@@ -13,8 +13,10 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuPrefab;
     [SerializeField] private float menuFadeDuration = 1f;
     [SerializeField] private string mainMenuBGMKey = "MainMenuTheme";
+    [SerializeField] private GameObject pressAnyKeyPrefab;
+    [SerializeField] private Animator mainMenuAnimator; // assign animator that has GoToPortal
 
-    [Header("LevelSelectorUI")]
+    [Header("Level Selector Settings")]
     [SerializeField] private GameObject levelSelectorUI;
     [SerializeField] private Button backButton;
 
@@ -28,6 +30,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     private bool canvasLoaded = false;
     private bool handleUIInput = true;
+    private Coroutine blinkRoutine;
 
     private void Start()
     {
@@ -36,6 +39,7 @@ public class MainMenuUIManager : MonoBehaviour
             levelSelectorUICanvas = levelSelectorUI.GetComponent<CanvasGroup>();
             if (levelSelectorUICanvas == null)
                 levelSelectorUICanvas = levelSelectorUI.AddComponent<CanvasGroup>();
+
             levelSelectorUI.SetActive(false);
             levelSelectorUICanvas.alpha = 0f;
         }
@@ -43,24 +47,40 @@ public class MainMenuUIManager : MonoBehaviour
         if (backButton != null)
             backButton.onClick.AddListener(BackToMainMenu);
 
+        if (pressAnyKeyPrefab != null)
+            pressAnyKeyPrefab.SetActive(false);
+
         StartCoroutine(ShowSplashThenMenu());
     }
 
     private void Update()
     {
-        if (canvasLoaded && handleUIInput) HandleUIInput();
+        if (canvasLoaded && handleUIInput)
+            HandleUIInput();
     }
 
     private void HandleUIInput()
     {
-        if(Input.anyKey)
+        if (Input.anyKeyDown)
         {
-            if (useAnim)
-                StartCoroutine(FadeCanvasGroup(levelSelectorUICanvas, 0f, 1f, fadeDuration));
+            // Stop blinking text
+            if (pressAnyKeyPrefab != null)
+            {
+                pressAnyKeyPrefab.SetActive(false);
+                if (blinkRoutine != null) StopCoroutine(blinkRoutine);
+            }
+
+            // Fade out main menu
+            if (menuCanvas != null && useAnim)
+                StartCoroutine(FadeCanvasGroup(menuCanvas, 1f, 0f, fadeDuration));
+
+            // Play transition animation
+            if (mainMenuAnimator != null)
+                mainMenuAnimator.SetTrigger("GoToPortal");
             else
-                levelSelectorUI.SetActive(true);
+                ShowLevelSelector(); // fallback if animator not set
+
             handleUIInput = false;
-            Debug.Log("KeyPressed");
         }
     }
 
@@ -109,7 +129,44 @@ public class MainMenuUIManager : MonoBehaviour
         }
 
         AudioManager.Instance.PlayBGM(mainMenuBGMKey, 1f);
+
+        // Show blinking "Press Any Key"
+        if (pressAnyKeyPrefab != null)
+        {
+            pressAnyKeyPrefab.SetActive(true);
+            blinkRoutine = StartCoroutine(BlinkText(pressAnyKeyPrefab));
+        }
+
         canvasLoaded = true;
+    }
+
+    private IEnumerator BlinkText(GameObject textObj)
+    {
+        CanvasGroup cg = textObj.GetComponent<CanvasGroup>();
+        if (cg == null) cg = textObj.AddComponent<CanvasGroup>();
+
+        while (true)
+        {
+            float t = 0f;
+            while (t < 1f)
+            {
+                t += Time.deltaTime;
+                cg.alpha = Mathf.Lerp(0f, 1f, t);
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.3f);
+
+            t = 0f;
+            while (t < 1f)
+            {
+                t += Time.deltaTime;
+                cg.alpha = Mathf.Lerp(1f, 0f, t);
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.3f);
+        }
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup cg, float start, float end, float duration, System.Action onComplete = null)
@@ -149,6 +206,22 @@ public class MainMenuUIManager : MonoBehaviour
     {
         if (useAnim)
             StartCoroutine(FadeCanvasGroupOP(levelSelectorUICanvas, 1f, 0f, fadeDuration));
+        else
+            levelSelectorUI.SetActive(false);
+    }
+
+    /// <summary>
+    /// Called by Animation Event at the end of "GoToPortal"
+    /// </summary>
+    public void OnGoToPortalAnimationEnd()
+    {
+        ShowLevelSelector();
+    }
+
+    private void ShowLevelSelector()
+    {
+        if (useAnim)
+            StartCoroutine(FadeCanvasGroup(levelSelectorUICanvas, 0f, 1f, fadeDuration));
         else
             levelSelectorUI.SetActive(true);
     }
