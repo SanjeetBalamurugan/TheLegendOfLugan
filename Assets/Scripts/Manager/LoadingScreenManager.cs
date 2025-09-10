@@ -5,7 +5,8 @@ using System.Collections;
 public class LoadingScreenManager : MonoBehaviour
 {
     public static LoadingScreenManager Instance;
-
+    
+    [SerializeField] private GameObject loadingUI;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image progressFill;
     [SerializeField] private Text progressText;
@@ -19,6 +20,10 @@ public class LoadingScreenManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
+
+        canvasGroup = loadingUI.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = loadingUI.AddComponent<CanvasGroup>();
 
         canvasGroup.alpha = 0f;
         IsFullyHidden = true;
