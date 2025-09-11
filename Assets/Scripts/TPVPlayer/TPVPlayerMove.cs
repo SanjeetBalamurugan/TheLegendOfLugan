@@ -61,6 +61,9 @@ public class TPVPlayerMove : MonoBehaviour
     [Header("Fixes")]
     [SerializeField] private bool tryFix = true;
     private Vector3 modelLocalPos;
+    public LevelUIManager uiManager;
+
+    private bool isPaused = false;
 
     private void Start()
     {
@@ -85,7 +88,10 @@ public class TPVPlayerMove : MonoBehaviour
         if (playerModel != null && tryFix)
             modelLocalPos = playerModel.localPosition;
 
-        Cursor.lockState = CursorLockMode.Locked;
+        if(!isPaused)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     private void Update()
@@ -106,6 +112,9 @@ public class TPVPlayerMove : MonoBehaviour
 
         if (tryFix && playerModel != null)
             playerModel.localPosition = modelLocalPos;
+
+        if(isPaused)
+            Cursor.lockState = CursorLockMode.None;
     }
 
     private void HandleAiming(bool isRunning)

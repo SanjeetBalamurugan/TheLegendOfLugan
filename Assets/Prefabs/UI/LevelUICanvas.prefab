@@ -117,9 +117,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementImage: {fileID: 273399543981652071}
   elementText: {fileID: 370575520331990775}
-  pyro: {fileID: 21300000, guid: 9566bb2ff0f85b84ba27a116aace5620, type: 3}
-  hydro: {fileID: 21300000, guid: 054c87ce8169d584cbd5b7b3acdb46f3, type: 3}
-  physical: {fileID: 21300000, guid: dda7d455c91d7d846bbe380381fc75f1, type: 3}
+  pyro: {fileID: 21300000, guid: 6c5e94fcbd418a4409cc7026b2f0c7e0, type: 3}
+  hydro: {fileID: 21300000, guid: 55d9eb7033e6d9547b70e61fe25e38a6, type: 3}
+  physical: {fileID: 21300000, guid: a44a25d9abd27214ba9122c9d74e535f, type: 3}
   combat: {fileID: 0}
 --- !u!1 &2004664554895058429
 GameObject:
