@@ -2280,7 +2280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db2b28503282b2e4d87954f4e97158af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useLoadingScreen: 0
+  useLoadingScreen: 1
   currentScene: 1
 --- !u!1001 &1560773904
 PrefabInstance:
