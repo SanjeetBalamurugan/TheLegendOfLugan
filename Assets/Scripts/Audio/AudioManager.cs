@@ -100,6 +100,31 @@ public class AudioManager : MonoBehaviour
     public void SetSFXVolume(float v) { sfxVolume = v; ApplyVolumes(); SaveSettings(); }
     public void SetUIVolume(float v) { uiVolume = v; ApplyVolumes(); SaveSettings(); }
 
+    public float GetVolume(string t)
+    {
+        if(t == "BGM")
+        {
+            return bgmVolume;
+        } else if (t == "UI")
+        {
+            return uiVolume;
+        }
+
+        return 0;
+    }
+
+    public void SetVolume(string t, float value)
+    {
+        if (t == "BGM")
+        {
+            bgmVolume = value;
+        }
+        else if (t == "UI")
+        {
+            uiVolume = value;
+        }
+    }
+
     private void ApplyVolumes()
     {
         if (bgmSource) bgmSource.volume = bgmVolume * masterVolume;
