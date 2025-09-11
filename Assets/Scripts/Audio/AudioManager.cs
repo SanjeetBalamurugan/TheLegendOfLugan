@@ -6,52 +6,40 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("Sound Library")]
     [SerializeField] private SoundData soundData;
-
-    [Header("Channels")]
     [SerializeField] private AudioSource bgmSource;
     [SerializeField] private AudioSource uiSource;
     [SerializeField] private int sfxPoolSize = 10;
 
     private List<AudioSource> sfxPool = new List<AudioSource>();
-
-    private float masterVolume = 1f;
-    private float bgmVolume = 1f;
-    private float sfxVolume = 1f;
-    private float uiVolume = 1f;
+    private float masterVolume = 1f, bgmVolume = 1f, sfxVolume = 1f, uiVolume = 1f;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
         InitSFXPool();
-        LoadVolumes();
+        LoadSettings();
     }
 
     private void InitSFXPool()
     {
         for (int i = 0; i < sfxPoolSize; i++)
         {
-            GameObject obj = new GameObject("SFX_AudioSource_" + i);
+            var obj = new GameObject("SFX_" + i);
             obj.transform.SetParent(transform);
-            AudioSource src = obj.AddComponent<AudioSource>();
-            sfxPool.Add(src);
+            sfxPool.Add(obj.AddComponent<AudioSource>());
         }
     }
 
     public void PlayBGM(string key, float fadeDuration = 1f)
     {
-        AudioClip clip = soundData.GetClip(key);
+        var clip = soundData.GetClip(key);
         if (clip == null) return;
 
         if (bgmSource.isPlaying)
-            StartCoroutine(CrossfadeBGM(clip, fadeDuration));
+            StartCoroutine(CrossfadeBGM(clip, key, fadeDuration));
         else
         {
             bgmSource.clip = clip;
@@ -61,17 +49,17 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private IEnumerator CrossfadeBGM(AudioClip newClip, float duration)
+    private IEnumerator CrossfadeBGM(AudioClip newClip, string key, float duration)
     {
-        float startVolume = bgmSource.volume;
+        float startVol = bgmSource.volume;
         for (float t = 0; t < duration; t += Time.deltaTime)
         {
-            bgmSource.volume = Mathf.Lerp(startVolume, 0, t / duration);
+            bgmSource.volume = Mathf.Lerp(startVol, 0, t / duration);
             yield return null;
         }
         bgmSource.Stop();
         bgmSource.clip = newClip;
-        bgmSource.loop = true;
+        bgmSource.loop = soundData.IsLooping(key);
         bgmSource.Play();
         for (float t = 0; t < duration; t += Time.deltaTime)
         {
@@ -80,73 +68,87 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySFX(string key, float pitchVariation = 0.1f)
+    public void PlaySFX(string key, float pitchVar = 0.1f)
     {
-        AudioClip clip = soundData.GetClip(key);
+        var clip = soundData.GetClip(key);
         if (clip == null) return;
 
-        AudioSource src = GetAvailableSFXSource();
+        var src = GetAvailableSFXSource();
         src.clip = clip;
         src.loop = false;
         src.volume = sfxVolume * masterVolume;
-        src.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+        src.pitch = 1f + Random.Range(-pitchVar, pitchVar);
         src.Play();
     }
 
     private AudioSource GetAvailableSFXSource()
     {
         foreach (var src in sfxPool)
-        {
-            if (!src.isPlaying)
-                return src;
-        }
+            if (!src.isPlaying) return src;
         return sfxPool[0];
     }
 
     public void PlayUI(string key)
     {
-        AudioClip clip = soundData.GetClip(key);
+        var clip = soundData.GetClip(key);
         if (clip == null) return;
-
         uiSource.PlayOneShot(clip, uiVolume * masterVolume);
     }
 
-    public void SetMasterVolume(float value) { masterVolume = value; ApplyVolumes(); SaveVolumes(); }
-    public void SetBGMVolume(float value) { bgmVolume = value; ApplyVolumes(); SaveVolumes(); }
-    public void SetSFXVolume(float value) { sfxVolume = value; ApplyVolumes(); SaveVolumes(); }
-    public void SetUIVolume(float value) { uiVolume = value; ApplyVolumes(); SaveVolumes(); }
+    public void SetMasterVolume(float v) { masterVolume = v; ApplyVolumes(); SaveSettings(); }
+    public void SetBGMVolume(float v) { bgmVolume = v; ApplyVolumes(); SaveSettings(); }
+    public void SetSFXVolume(float v) { sfxVolume = v; ApplyVolumes(); SaveSettings(); }
+    public void SetUIVolume(float v) { uiVolume = v; ApplyVolumes(); SaveSettings(); }
+
+    public float GetVolume(string t)
+    {
+        if(t == "BGM")
+        {
+            return bgmVolume;
+        } else if (t == "UI")
+        {
+            return uiVolume;
+        }
+
+        return 0;
+    }
+
+    public void SetVolume(string t, float value)
+    {
+        if (t == "BGM")
+        {
+            bgmVolume = value;
+        }
+        else if (t == "UI")
+        {
+            uiVolume = value;
+        }
+    }
 
     private void ApplyVolumes()
     {
-        if (bgmSource != null) bgmSource.volume = bgmVolume * masterVolume;
-        if (uiSource != null) uiSource.volume = uiVolume * masterVolume;
+        if (bgmSource) bgmSource.volume = bgmVolume * masterVolume;
+        if (uiSource) uiSource.volume = uiVolume * masterVolume;
         foreach (var src in sfxPool)
             src.volume = sfxVolume * masterVolume;
     }
 
-    private void SaveVolumes()
+    private void SaveSettings()
     {
-        PlayerPrefs.SetFloat("MasterVol", masterVolume);
-        PlayerPrefs.SetFloat("BGMVol", bgmVolume);
-        PlayerPrefs.SetFloat("SFXVol", sfxVolume);
-        PlayerPrefs.SetFloat("UIVol", uiVolume);
-        PlayerPrefs.Save();
+        var data = new SettingsSaveData(bgmVolume, uiVolume, QualitySettings.GetQualityLevel(), sfxVolume, masterVolume);
+        SaveSystem.Save(SaveType.Settings, data);
     }
 
-    private void LoadVolumes()
+    private void LoadSettings()
     {
-        masterVolume = PlayerPrefs.GetFloat("MasterVol", 1f);
-        bgmVolume = PlayerPrefs.GetFloat("BGMVol", 1f);
-        sfxVolume = PlayerPrefs.GetFloat("SFXVol", 1f);
-        uiVolume = PlayerPrefs.GetFloat("UIVol", 1f);
-        ApplyVolumes();
-    }
-
-    public float GetVolume(string key) {
-        return PlayerPrefs.GetFloat(key, 1f);
-    }
-    public void SetVolume(string key, float value) {
-        PlayerPrefs.SetFloat(key, value);
-        PlayerPrefs.Save();
+        var data = SaveSystem.Load<SettingsSaveData>(SaveType.Settings);
+        if (data != null)
+        {
+            bgmVolume = data.bgmVolume;
+            uiVolume = data.uiVolume;
+            sfxVolume = data.sfxVolume;
+            masterVolume = data.masterVolume;
+            ApplyVolumes();
+        }
     }
 }

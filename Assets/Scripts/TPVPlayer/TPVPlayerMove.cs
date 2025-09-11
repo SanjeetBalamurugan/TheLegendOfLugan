@@ -58,6 +58,10 @@ public class TPVPlayerMove : MonoBehaviour
     private const string HorizontalAxis = "Horizontal";
     private const string VerticalAxis = "Vertical";
 
+    [Header("Fixes")]
+    [SerializeField] private bool tryFix = true;
+    private Vector3 modelLocalPos;
+
     private void Start()
     {
         playerFreeLook = playerCam.GetComponent<CinemachineFreeLook>();
@@ -78,6 +82,9 @@ public class TPVPlayerMove : MonoBehaviour
         if (brain != null)
             brain.m_DefaultBlend.m_Time = camBlendTime;
 
+        if (playerModel != null && tryFix)
+            modelLocalPos = playerModel.localPosition;
+
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -96,6 +103,9 @@ public class TPVPlayerMove : MonoBehaviour
         ApplyGravity();
 
         controller.Move(velocity * Time.deltaTime);
+
+        if (tryFix && playerModel != null)
+            playerModel.localPosition = modelLocalPos;
     }
 
     private void HandleAiming(bool isRunning)
