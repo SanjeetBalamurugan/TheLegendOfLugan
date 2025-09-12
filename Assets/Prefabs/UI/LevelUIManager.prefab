@@ -44,12 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b702e27e3f166b4bbbee0f922da6884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseMenuPrefab: {fileID: 2232253499190520750, guid: 404668fa039c9e245b3df229307eb14a,
-    type: 3}
-  settingsMenuPrefab: {fileID: 5566832046246253607, guid: ea8a64c8a62754c4996825089153d637,
-    type: 3}
+  pauseMenuPrefab: {fileID: 0}
+  settingsMenuPrefab: {fileID: 0}
   resumeButton: {fileID: 0}
   settingsButton: {fileID: 0}
   backButton: {fileID: 0}
   useAnim: 1
   fadeDuration: 0.3
+  bgmKey: level_main_theme

@@ -138,4 +138,9 @@ public class LevelUIManager : MonoBehaviour
         cg.alpha = end;
         onComplete?.Invoke();
     }
+
+    public bool IsPaused()
+    {
+        return isPaused;
+    }
 }
