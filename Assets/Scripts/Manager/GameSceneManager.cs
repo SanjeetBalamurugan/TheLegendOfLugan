@@ -14,59 +14,43 @@ public enum GameScene
 public class GameSceneManager : MonoBehaviour
 {
     [SerializeField] private bool useLoadingScreen = true;
-    private GameScene nextSceneToLoad;
-    [SerializeField] private GameScene currentScene;
+    [SerializeField] private GameScene nextSceneToLoad;
 
     public static event System.Action<GameScene> OnSceneLoaded;
 
     private void Start()
     {
+        // Load settings automatically at startup
         LoadSettingsData();
+        StartCoroutine(LoadGameSequence());
     }
 
     private IEnumerator LoadGameSequence()
     {
         if (!SceneManager.GetSceneByName(GameScene.Persistent.ToString()).isLoaded)
-        {
-            if (Application.CanStreamedLevelBeLoaded(GameScene.Persistent.ToString()))
-                yield return SceneManager.LoadSceneAsync(GameScene.Persistent.ToString(), LoadSceneMode.Additive);
-            else
-                yield break;
-        }
+            yield return SceneManager.LoadSceneAsync(GameScene.Persistent.ToString(), LoadSceneMode.Additive);
 
         if (useLoadingScreen)
         {
-            if (Application.CanStreamedLevelBeLoaded(GameScene.LoadingScreen.ToString()))
-                yield return SceneManager.LoadSceneAsync(GameScene.LoadingScreen.ToString(), LoadSceneMode.Additive);
-            else
-                yield break;
-        }
-
-        yield return StartCoroutine(LoadNextSceneAsync(nextSceneToLoad));
-
-        if (useLoadingScreen && SceneManager.GetSceneByName(GameScene.LoadingScreen.ToString()).isLoaded)
+            yield return SceneManager.LoadSceneAsync(GameScene.LoadingScreen.ToString(), LoadSceneMode.Additive);
+            yield return StartCoroutine(LoadNextSceneAsync(nextSceneToLoad));
             SceneManager.UnloadSceneAsync(GameScene.LoadingScreen.ToString());
+        }
+        else
+        {
+            yield return StartCoroutine(LoadNextSceneAsync(nextSceneToLoad));
+        }
     }
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
-        if (SceneManager.GetSceneByName(currentScene.ToString()).isLoaded)
-        {
-            AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentScene.ToString());
-            if (unloadOp != null)
-                yield return unloadOp;
-        }
-
-        if (!Application.CanStreamedLevelBeLoaded(scene.ToString()))
-            yield break;
-
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         while (!loadOp.isDone)
             yield return null;
 
+        SceneManager.UnloadSceneAsync(nextSceneToLoad.ToString());
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
-        currentScene = scene;
-        yield return null;
+
         OnSceneLoaded?.Invoke(scene);
     }
 
@@ -79,12 +63,13 @@ public class GameSceneManager : MonoBehaviour
 
     public void ReloadCurrentScene()
     {
-        GameScene scene = (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
-        LoadScene(scene, useLoadingScreen);
+        GameScene currentScene = (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
+        LoadScene(currentScene, useLoadingScreen);
     }
 
     public void QuitToMainMenu()
     {
+        // Save settings before quitting
         SaveSettingsData();
         LoadScene(GameScene.MainMenu, true);
     }
@@ -94,8 +79,10 @@ public class GameSceneManager : MonoBehaviour
         return (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
     }
 
+    // --- SAVE/LOAD HOOKS ---
     private void SaveSettingsData()
     {
+        // Example: pull data from AudioManager
         float bgm = PlayerPrefs.GetFloat("BGMVol", 1f);
         float ui = PlayerPrefs.GetFloat("UIVol", 1f);
         int quality = QualitySettings.GetQualityLevel();
@@ -109,8 +96,11 @@ public class GameSceneManager : MonoBehaviour
         SettingsSaveData data = SaveSystem.Load<SettingsSaveData>(SaveType.Settings);
         if (data != null)
         {
+            // Apply audio
             AudioManager.Instance.SetBGMVolume(data.bgmVolume);
             AudioManager.Instance.SetUIVolume(data.uiVolume);
+
+            // Apply graphics
             QualitySettings.SetQualityLevel(data.qualityPreset, true);
         }
     }
