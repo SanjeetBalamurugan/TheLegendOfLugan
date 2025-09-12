@@ -83,6 +83,9 @@ public class GameSceneManager : MonoBehaviour
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
         currentScene = scene;
 
+        // ✅ Switch BGM based on scene
+        PlaySceneBGM(scene);
+
         OnSceneLoaded?.Invoke(scene);
     }
 
@@ -130,6 +133,28 @@ public class GameSceneManager : MonoBehaviour
             AudioManager.Instance.SetBGMVolume(data.bgmVolume);
             AudioManager.Instance.SetUIVolume(data.uiVolume);
             QualitySettings.SetQualityLevel(data.qualityPreset, true);
+        }
+    }
+
+    // 🎵 BGM Switcher
+    private void PlaySceneBGM(GameScene scene)
+    {
+        if (AudioManager.Instance == null) return;
+
+        switch (scene)
+        {
+            case GameScene.MainMenu:
+                AudioManager.Instance.PlayBGM("MainMenuTheme");
+                break;
+            case GameScene.Level1:
+                AudioManager.Instance.PlayBGM("Level1Theme");
+                break;
+            case GameScene.Level2:
+                AudioManager.Instance.PlayBGM("Level2Theme");
+                break;
+            default:
+                AudioManager.Instance.StopBGM();
+                break;
         }
     }
 }
