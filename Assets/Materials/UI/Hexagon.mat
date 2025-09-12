@@ -39,11 +39,26 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _HorizontalPanSpeed: 0.2
-    - _VerticalPanSpeed: 0.2
+    - _HorizontalPanSpeed: 0.02
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _VerticalPanSpeed: 0.02
     m_Colors:
     - _BottomColor: {r: 0.43396226, g: 0.43396226, b: 0.43396226, a: 0}
-    - _Color: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 0.6666667}
-    - _TilingVector: {r: 2, g: 1, b: 0, a: 0}
+    - _Color: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 0.6666667}
+    - _TilingVector: {r: 1, g: 1, b: 0, a: 0}
     - _TopColor: {r: 1, g: 0.5990566, b: 0.5990566, a: 0}
   m_BuildTextureStacks: []
+--- !u!114 &9183505082556773279
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5
