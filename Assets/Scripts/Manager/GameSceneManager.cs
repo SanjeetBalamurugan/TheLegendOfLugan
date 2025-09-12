@@ -6,7 +6,6 @@ public enum GameScene
 {
     Persistent,
     MainMenu,
-    Gameplay,
     LoadingScreen,
     Level1,
     Level2
@@ -15,7 +14,8 @@ public enum GameScene
 public class GameSceneManager : MonoBehaviour
 {
     [SerializeField] private bool useLoadingScreen = true;
-    [SerializeField] private GameScene nextSceneToLoad;
+    private GameScene nextSceneToLoad;
+    [SerializeField] private GameScene currentScene;
 
     public static event System.Action<GameScene> OnSceneLoaded;
 
@@ -23,7 +23,6 @@ public class GameSceneManager : MonoBehaviour
     {
         // Load settings automatically at startup
         LoadSettingsData();
-        StartCoroutine(LoadGameSequence());
     }
 
     private IEnumerator LoadGameSequence()
@@ -45,11 +44,11 @@ public class GameSceneManager : MonoBehaviour
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
+        SceneManager.UnloadSceneAsync(currentScene.ToString());
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         while (!loadOp.isDone)
             yield return null;
 
-        SceneManager.UnloadSceneAsync(nextSceneToLoad.ToString());
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
 
         OnSceneLoaded?.Invoke(scene);
