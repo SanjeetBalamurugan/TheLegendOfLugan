@@ -1187,10 +1187,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb9d8304cd5e1942a7c365321ce6ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundData: {fileID: 11400000, guid: 33d211f6220a0354d9342124b3a8beec, type: 2}
+  soundData: {fileID: 11400000, guid: b81ac5f29a4fc23408542e61d7aaf17b, type: 2}
   bgmSource: {fileID: 642643056}
   uiSource: {fileID: 1820209871}
   sfxPoolSize: 5
+  debugMode: 1
 --- !u!4 &859702411
 Transform:
   m_ObjectHideFlags: 0
