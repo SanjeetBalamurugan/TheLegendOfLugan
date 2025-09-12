@@ -17,14 +17,26 @@ public class GameSceneManager : MonoBehaviour
     private GameScene nextSceneToLoad;
     [SerializeField] private GameScene currentScene;
 
+    public static GameSceneManager Instance { get; private set; }
     public static event System.Action<GameScene> OnSceneLoaded;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
         LoadSettingsData();
     }
 
-    private IEnumerator LoadGameSequence()
+    private IEnumerator LoadGameSequence(bool useLoadingScreenOverride)
     {
         if (!SceneManager.GetSceneByName(GameScene.Persistent.ToString()).isLoaded)
         {
@@ -34,27 +46,31 @@ public class GameSceneManager : MonoBehaviour
                 yield break;
         }
 
-        if (useLoadingScreen)
+        if (useLoadingScreenOverride)
         {
             if (Application.CanStreamedLevelBeLoaded(GameScene.LoadingScreen.ToString()))
                 yield return SceneManager.LoadSceneAsync(GameScene.LoadingScreen.ToString(), LoadSceneMode.Additive);
-            else
-                yield break;
         }
 
         yield return StartCoroutine(LoadNextSceneAsync(nextSceneToLoad));
 
-        if (useLoadingScreen && SceneManager.GetSceneByName(GameScene.LoadingScreen.ToString()).isLoaded)
-            SceneManager.UnloadSceneAsync(GameScene.LoadingScreen.ToString());
+        if (useLoadingScreenOverride && SceneManager.GetSceneByName(GameScene.LoadingScreen.ToString()).isLoaded)
+        {
+            AsyncOperation unloadLoadingOp = SceneManager.UnloadSceneAsync(GameScene.LoadingScreen.ToString());
+            while (!unloadLoadingOp.isDone)
+                yield return null;
+        }
     }
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
-        if (SceneManager.GetSceneByName(currentScene.ToString()).isLoaded)
+        string currentSceneName = currentScene.ToString();
+
+        if (currentScene != GameScene.Persistent && SceneManager.GetSceneByName(currentSceneName).isLoaded)
         {
-            AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentScene.ToString());
-            if (unloadOp != null)
-                yield return unloadOp;
+            AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentSceneName);
+            while (!unloadOp.isDone)
+                yield return null;
         }
 
         if (!Application.CanStreamedLevelBeLoaded(scene.ToString()))
@@ -66,7 +82,7 @@ public class GameSceneManager : MonoBehaviour
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
         currentScene = scene;
-        yield return null;
+
         OnSceneLoaded?.Invoke(scene);
     }
 
@@ -74,13 +90,13 @@ public class GameSceneManager : MonoBehaviour
     {
         nextSceneToLoad = scene;
         useLoadingScreen = useLoadingScreenOverride;
-        StartCoroutine(LoadGameSequence());
+        StartCoroutine(LoadGameSequence(useLoadingScreenOverride));
     }
 
     public void ReloadCurrentScene()
     {
-        GameScene scene = (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
-        LoadScene(scene, useLoadingScreen);
+        if (System.Enum.TryParse(SceneManager.GetActiveScene().name, out GameScene scene))
+            LoadScene(scene, useLoadingScreen);
     }
 
     public void QuitToMainMenu()
@@ -91,7 +107,9 @@ public class GameSceneManager : MonoBehaviour
 
     public GameScene GetCurrentScene()
     {
-        return (GameScene)System.Enum.Parse(typeof(GameScene), SceneManager.GetActiveScene().name);
+        if (System.Enum.TryParse(SceneManager.GetActiveScene().name, out GameScene result))
+            return result;
+        return GameScene.Persistent;
     }
 
     private void SaveSettingsData()
