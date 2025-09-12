@@ -38,14 +38,4 @@ MonoBehaviour:
     loop: 0
     volume: 0
     pitch: 0
-  - key: MainMenuTheme
-    clip: {fileID: 8300000, guid: 5d2e24304cc58d544bb49e927f2a8da8, type: 3}
-    loop: 1
-    volume: 100
-    pitch: 0
-  - key: Splash_Chime
-    clip: {fileID: 8300000, guid: ae52a75be9b8f2d4bbb3385e0b79f0e6, type: 3}
-    loop: 1
-    volume: 100
-    pitch: 0
-  debugMode: 0
+  debugMode: 1
