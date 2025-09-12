@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 646e5617d74694444a8983fcc114a51a, type: 3}
+  m_Name: MainMenu
+  m_EditorClassIdentifier: 
+  sounds:
+  - key: MainMenuTheme
+    clip: {fileID: 8300000, guid: c46e4c387c55fc344ac58b3eedaec0d3, type: 3}
+    loop: 1
+    volume: 100
+    pitch: 0
+  - key: Splash_Chime
+    clip: {fileID: 8300000, guid: ae52a75be9b8f2d4bbb3385e0b79f0e6, type: 3}
+    loop: 0
+    volume: 100
+    pitch: 0

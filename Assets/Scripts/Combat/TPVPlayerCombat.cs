@@ -56,4 +56,9 @@ public class TPVPlayerCombat : MonoBehaviour
         }
         return 0;
     }
+
+    public ArrowType GetArrowType()
+    {
+        return currentArrowType;
+    }
 }
