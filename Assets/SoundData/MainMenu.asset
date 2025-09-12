@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - key: MainMenuTheme
-    clip: {fileID: 8300000, guid: c46e4c387c55fc344ac58b3eedaec0d3, type: 3}
+    clip: {fileID: 8300000, guid: 5d2e24304cc58d544bb49e927f2a8da8, type: 3}
     loop: 1
     volume: 100
     pitch: 0
@@ -23,3 +23,4 @@ MonoBehaviour:
     loop: 0
     volume: 100
     pitch: 0
+  debugMode: 1

@@ -1260,6 +1260,7 @@ MonoBehaviour:
   bgmSource: {fileID: 642643056}
   uiSource: {fileID: 1820209871}
   sfxPoolSize: 5
+  debugMode: 1
 --- !u!4 &859702411
 Transform:
   m_ObjectHideFlags: 0
