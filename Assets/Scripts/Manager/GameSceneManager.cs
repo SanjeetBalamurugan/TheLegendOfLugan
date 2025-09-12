@@ -76,13 +76,11 @@ public class GameSceneManager : MonoBehaviour
         if (!Application.CanStreamedLevelBeLoaded(scene.ToString()))
             yield break;
 
-        AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
+        AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Single);
         while (!loadOp.isDone)
             yield return null;
 
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
         currentScene = scene;
-
         OnSceneLoaded?.Invoke(scene);
     }
 
