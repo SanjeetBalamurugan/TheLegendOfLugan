@@ -32,29 +32,35 @@ public class AudioManager : MonoBehaviour
         if (debugMode)
             Debug.Log("[AudioManager] Awake called");
 
+        EnsureAudioSources();
+        InitSFXPool();
+        LoadSettings();
+    }
+
+    private void EnsureAudioSources()
+    {
         if (bgmSource == null)
         {
             var bgmObj = new GameObject("BGM_Source");
             bgmObj.transform.SetParent(transform);
             bgmSource = bgmObj.AddComponent<AudioSource>();
-            bgmSource.playOnAwake = false;
-            bgmSource.loop = true;
-            if (debugMode)
-                Debug.Log("[AudioManager] Created missing BGM AudioSource.");
+            if (debugMode) Debug.Log("[AudioManager] Created missing BGM AudioSource.");
         }
+        if (!bgmSource.gameObject.activeSelf) bgmSource.gameObject.SetActive(true);
+        if (!bgmSource.enabled) bgmSource.enabled = true;
+        bgmSource.playOnAwake = false;
+        bgmSource.loop = true;
 
         if (uiSource == null)
         {
             var uiObj = new GameObject("UI_Source");
             uiObj.transform.SetParent(transform);
             uiSource = uiObj.AddComponent<AudioSource>();
-            uiSource.playOnAwake = false;
-            if (debugMode)
-                Debug.Log("[AudioManager] Created missing UI AudioSource.");
+            if (debugMode) Debug.Log("[AudioManager] Created missing UI AudioSource.");
         }
-
-        InitSFXPool();
-        LoadSettings();
+        if (!uiSource.gameObject.activeSelf) uiSource.gameObject.SetActive(true);
+        if (!uiSource.enabled) uiSource.enabled = true;
+        uiSource.playOnAwake = false;
     }
 
     private void InitSFXPool()
@@ -64,6 +70,7 @@ public class AudioManager : MonoBehaviour
             var obj = new GameObject("SFX_" + i);
             obj.transform.SetParent(transform);
             var src = obj.AddComponent<AudioSource>();
+            src.playOnAwake = false;
             sfxPool.Add(src);
             if (debugMode)
                 Debug.Log($"[AudioManager] SFX pool source {i} initialized.");
@@ -79,11 +86,8 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        if (bgmSource == null || !bgmSource.enabled || !bgmSource.gameObject.activeInHierarchy)
-        {
-            Debug.LogError("[AudioManager] BGM AudioSource not available.");
-            return;
-        }
+        EnsureAudioSources();
+        if (bgmSource == null) return;
 
         if (debugMode) Debug.Log($"[AudioManager] Playing BGM '{key}' → clip '{clip.name}'");
 
@@ -167,11 +171,10 @@ public class AudioManager : MonoBehaviour
             if (debugMode) Debug.LogError($"[AudioManager] PlayUI failed: key '{key}' not found.");
             return;
         }
-        if (uiSource == null || !uiSource.enabled || !uiSource.gameObject.activeInHierarchy)
-        {
-            Debug.LogError("[AudioManager] UI AudioSource not available.");
-            return;
-        }
+
+        EnsureAudioSources();
+        if (uiSource == null) return;
+
         uiSource.PlayOneShot(clip, uiVolume * masterVolume);
         if (debugMode)
             Debug.Log($"[AudioManager] Played UI sound '{key}'");
