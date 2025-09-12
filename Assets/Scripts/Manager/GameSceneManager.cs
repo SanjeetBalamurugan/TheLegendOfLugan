@@ -57,6 +57,7 @@ public class GameSceneManager : MonoBehaviour
         if (LoadingScreenManager.Instance != null)
             LoadingScreenManager.Instance.FadeIn();
 
+>>>>>>> parent of e4b46c7 (Update GameSceneManager.cs)
         SceneManager.UnloadSceneAsync(currentScene.ToString());
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         loadOp.allowSceneActivation = false;
@@ -83,6 +84,8 @@ public class GameSceneManager : MonoBehaviour
 
         if (LoadingScreenManager.Instance != null)
             LoadingScreenManager.Instance.FadeOut();
+=======
+>>>>>>> parent of e4b46c7 (Update GameSceneManager.cs)
 
         OnSceneLoaded?.Invoke(scene);
     }
