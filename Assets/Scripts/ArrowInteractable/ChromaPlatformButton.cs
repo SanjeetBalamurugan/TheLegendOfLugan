@@ -16,7 +16,11 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
     {
         foreach (Renderer rend in platformRenderers)
         {
-            if (rend == null) continue;
+            if (rend == null)
+            {
+                Debug.Log(rend.gameObject.name);
+                continue;
+            }
 
             if (activeTransitions.ContainsKey(rend) && activeTransitions[rend] != null)
                 StopCoroutine(activeTransitions[rend]);
@@ -28,7 +32,11 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
     private IEnumerator ChangeAlphaThreshold(Renderer rend)
     {
         if (!rend.material.HasProperty(alphaThresholdProperty))
+        {
+            Debug.Log("{rend.gameObject.name} doesnt have the alpha property");
             yield break;
+        }
+            
 
         float startValue = rend.material.GetFloat(alphaThresholdProperty);
         float elapsed = 0f;

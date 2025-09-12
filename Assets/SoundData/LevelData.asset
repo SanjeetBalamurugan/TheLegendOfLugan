@@ -16,7 +16,7 @@ MonoBehaviour:
   - key: level_main_theme
     clip: {fileID: 8300000, guid: 2da1e5c76ae1f534e8de33f3854f2e50, type: 3}
     loop: 1
-    volume: 0
+    volume: 100
     pitch: 0
   - key: bow_loading
     clip: {fileID: 8300000, guid: 24399aa82a0019b40b1182f4be61b16d, type: 3}
