@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 63725160277653164}
   - component: {fileID: 5038163797854571033}
   - component: {fileID: 8108427892316769119}
+  - component: {fileID: -3086943299407979298}
   m_Layer: 0
   m_Name: ChromaInteractiveSphere
   m_TagString: Untagged
@@ -62,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9d8e09cf05b95b443a836afdb0d5068e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,3 +98,23 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-3086943299407979298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8825063641093529276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa0cc90b60b52514b8adcb962b69060e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectName: Chroma Platform
+  platformRenderers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  alphaThresholdProperty: _AlphaThreshold
+  targetAlphaThreshold: 0.5
+  transitionDuration: 1
