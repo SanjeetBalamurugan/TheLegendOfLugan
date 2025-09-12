@@ -38,3 +38,4 @@ MonoBehaviour:
     loop: 0
     volume: 0
     pitch: 0
+  debugMode: 1

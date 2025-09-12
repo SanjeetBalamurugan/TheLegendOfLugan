@@ -7,7 +7,7 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
     [SerializeField] private string objectName = "Chroma Platform";
     [SerializeField] private List<Renderer> platformRenderers;
     [SerializeField] private string alphaThresholdProperty = "_AlphaThreshold";
-    [SerializeField] private float targetAlphaThreshold = 0.5f;
+    [SerializeField] private float targetAlphaThreshold = 1f;
     [SerializeField] private float transitionDuration = 1f;
 
     private Dictionary<Renderer, Coroutine> activeTransitions = new();
@@ -19,6 +19,7 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
         {
             if (rend == null) continue;
             cachedMaterials[rend] = rend.material;
+            rend.gameObject.GetComponent<Collider>().enabled = false;
         }
     }
 
@@ -27,6 +28,7 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
         foreach (Renderer rend in platformRenderers)
         {
             if (rend == null) continue;
+            rend.gameObject.GetComponent<Collider>().enabled = true;
 
             if (activeTransitions.ContainsKey(rend) && activeTransitions[rend] != null)
                 StopCoroutine(activeTransitions[rend]);
