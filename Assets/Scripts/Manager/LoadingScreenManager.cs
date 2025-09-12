@@ -7,7 +7,7 @@ public class LoadingScreenManager : MonoBehaviour
     public static LoadingScreenManager Instance;
 
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private RectTransform progressFillTransform;
+    [SerializeField] private Image progressFill;
     [SerializeField] private float fadeDuration = 0.5f;
 
     private void Awake()
@@ -24,9 +24,8 @@ public class LoadingScreenManager : MonoBehaviour
 
     public void SetProgress(float value)
     {
-        float clamped = Mathf.Clamp01(value);
-        if (progressFillTransform != null)
-            progressFillTransform.localScale = new Vector3(clamped, 1f, 1f);
+        if (progressFill != null)
+            progressFill.fillAmount = Mathf.Clamp01(value);
     }
 
     public void FadeIn()
