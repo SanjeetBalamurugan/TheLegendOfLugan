@@ -50,7 +50,6 @@ public class GameSceneManager : MonoBehaviour
 
     private IEnumerator LoadNextSceneAsync(GameScene scene)
     {
-<<<<<<< HEAD
         if (SceneManager.GetSceneByName(currentScene.ToString()).isLoaded)
         {
             AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(currentScene.ToString());
@@ -64,9 +63,6 @@ public class GameSceneManager : MonoBehaviour
         if (LoadingScreenManager.Instance != null)
             LoadingScreenManager.Instance.FadeIn();
 
-=======
-        SceneManager.UnloadSceneAsync(currentScene.ToString());
->>>>>>> parent of e4b46c7 (Update GameSceneManager.cs)
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Additive);
         loadOp.allowSceneActivation = false;
 
@@ -86,15 +82,12 @@ public class GameSceneManager : MonoBehaviour
             yield return null;
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.ToString()));
-<<<<<<< HEAD
         currentScene = scene;
 
         yield return null;
 
         if (LoadingScreenManager.Instance != null)
             LoadingScreenManager.Instance.FadeOut();
-=======
->>>>>>> parent of e4b46c7 (Update GameSceneManager.cs)
 
         OnSceneLoaded?.Invoke(scene);
     }
