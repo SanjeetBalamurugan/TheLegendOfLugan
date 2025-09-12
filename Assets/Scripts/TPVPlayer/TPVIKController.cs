@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 public class TPVIKController : MonoBehaviour
 {
     [Header("IK Settings")]

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - key: MainMenuTheme
-    clip: {fileID: 8300000, guid: efe1d05076c445847aace4d6ee42e0cd, type: 3}
-    loop: 0
+    clip: {fileID: 8300000, guid: c46e4c387c55fc344ac58b3eedaec0d3, type: 3}
+    loop: 1
     volume: 100
     pitch: 0
   - key: Splash_Chime

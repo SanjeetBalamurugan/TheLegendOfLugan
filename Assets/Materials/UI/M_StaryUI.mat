@@ -103,7 +103,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _StarMoveSpeed: 0.01
-    - _StarPower: 3.22
+    - _StarPower: 15
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
@@ -112,7 +112,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _StarColour: {r: 22.075762, g: 50.196075, b: 49.144848, a: 0}
+    - _StarColour: {r: 56.58401, g: 67.0157, b: 66.62573, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2402870222971401330
 MonoBehaviour:
