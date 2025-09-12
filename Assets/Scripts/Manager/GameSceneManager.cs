@@ -6,6 +6,7 @@ public enum GameScene
 {
     Persistent,
     MainMenu,
+    Gameplay,
     LoadingScreen,
     Level1,
     Level2
