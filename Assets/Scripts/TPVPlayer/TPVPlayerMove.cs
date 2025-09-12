@@ -134,6 +134,7 @@ public class TPVPlayerMove : MonoBehaviour
         playerFreeLook.Priority = normalCamPriority;
         aimFreeLook.Priority = aimCamPriority;
         animator.SetLayerWeight(1, 1f);
+        AudioManager.Instance.PlaySFX("bow_loading");
     }
 
     private void OnAimEnd()
@@ -186,9 +187,15 @@ public class TPVPlayerMove : MonoBehaviour
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
 
             if (isRunning)
+            {
+                AudioManager.Instance.PlaySFX("running_footsteps");
                 ChangeAnimationState(RunAnim);
+            }
             else
+            {
+                AudioManager.Instance.PlaySFX("footsteps");
                 ChangeAnimationState(WalkAnim);
+            }
         }
         else if (isGrounded)
         {
