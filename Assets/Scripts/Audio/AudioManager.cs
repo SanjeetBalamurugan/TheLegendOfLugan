@@ -16,6 +16,7 @@ public class AudioManager : MonoBehaviour
 
     private List<AudioSource> sfxPool = new List<AudioSource>();
     private float masterVolume = 1f, bgmVolume = 1f, sfxVolume = 1f, uiVolume = 1f;
+    private Coroutine crossfadeRoutine;
 
     private void Awake()
     {
@@ -31,6 +32,27 @@ public class AudioManager : MonoBehaviour
         if (debugMode)
             Debug.Log("[AudioManager] Awake called");
 
+        if (bgmSource == null)
+        {
+            var bgmObj = new GameObject("BGM_Source");
+            bgmObj.transform.SetParent(transform);
+            bgmSource = bgmObj.AddComponent<AudioSource>();
+            bgmSource.playOnAwake = false;
+            bgmSource.loop = true;
+            if (debugMode)
+                Debug.Log("[AudioManager] Created missing BGM AudioSource.");
+        }
+
+        if (uiSource == null)
+        {
+            var uiObj = new GameObject("UI_Source");
+            uiObj.transform.SetParent(transform);
+            uiSource = uiObj.AddComponent<AudioSource>();
+            uiSource.playOnAwake = false;
+            if (debugMode)
+                Debug.Log("[AudioManager] Created missing UI AudioSource.");
+        }
+
         InitSFXPool();
         LoadSettings();
     }
@@ -43,7 +65,6 @@ public class AudioManager : MonoBehaviour
             obj.transform.SetParent(transform);
             var src = obj.AddComponent<AudioSource>();
             sfxPool.Add(src);
-
             if (debugMode)
                 Debug.Log($"[AudioManager] SFX pool source {i} initialized.");
         }
@@ -58,23 +79,25 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        if (bgmSource == null)
+        if (bgmSource == null || !bgmSource.enabled || !bgmSource.gameObject.activeInHierarchy)
         {
-            Debug.LogError("[AudioManager] BGM AudioSource not assigned.");
+            Debug.LogError("[AudioManager] BGM AudioSource not available.");
             return;
         }
 
         if (debugMode) Debug.Log($"[AudioManager] Playing BGM '{key}' → clip '{clip.name}'");
 
+        if (crossfadeRoutine != null)
+            StopCoroutine(crossfadeRoutine);
+
         if (bgmSource.isPlaying)
-            StartCoroutine(CrossfadeBGM(clip, key, fadeDuration));
+            crossfadeRoutine = StartCoroutine(CrossfadeBGM(clip, key, fadeDuration));
         else
         {
             bgmSource.clip = clip;
             bgmSource.loop = soundData.IsLooping(key);
             bgmSource.volume = bgmVolume * masterVolume;
             bgmSource.Play();
-
             if (debugMode)
                 Debug.Log($"[AudioManager] BGM '{clip.name}' started at volume {bgmSource.volume}");
         }
@@ -131,10 +154,8 @@ public class AudioManager : MonoBehaviour
             if (!src.isPlaying)
                 return src;
         }
-
         if (debugMode)
             Debug.LogWarning("[AudioManager] All SFX sources busy, using first in pool.");
-
         return sfxPool[0];
     }
 
@@ -146,9 +167,12 @@ public class AudioManager : MonoBehaviour
             if (debugMode) Debug.LogError($"[AudioManager] PlayUI failed: key '{key}' not found.");
             return;
         }
-
+        if (uiSource == null || !uiSource.enabled || !uiSource.gameObject.activeInHierarchy)
+        {
+            Debug.LogError("[AudioManager] UI AudioSource not available.");
+            return;
+        }
         uiSource.PlayOneShot(clip, uiVolume * masterVolume);
-
         if (debugMode)
             Debug.Log($"[AudioManager] Played UI sound '{key}'");
     }
@@ -181,30 +205,34 @@ public class AudioManager : MonoBehaviour
         SaveSettings();
     }
 
-    public float GetVolume(string t)
+    public float GetVolume(string t) => t switch
     {
-        return t switch
-        {
-            "BGM" => bgmVolume,
-            "UI" => uiVolume,
-            _ => 0,
-        };
-    }
+        "BGM" => bgmVolume,
+        "SFX" => sfxVolume,
+        "UI" => uiVolume,
+        "Master" => masterVolume,
+        _ => 0,
+    };
 
     public void SetVolume(string t, float value)
     {
-        if (t == "BGM") bgmVolume = value;
-        else if (t == "UI") uiVolume = value;
+        switch (t)
+        {
+            case "BGM": bgmVolume = value; break;
+            case "SFX": sfxVolume = value; break;
+            case "UI": uiVolume = value; break;
+            case "Master": masterVolume = value; break;
+        }
+        ApplyVolumes();
+        SaveSettings();
     }
 
     private void ApplyVolumes()
     {
         if (bgmSource) bgmSource.volume = bgmVolume * masterVolume;
         if (uiSource) uiSource.volume = uiVolume * masterVolume;
-
         foreach (var src in sfxPool)
             src.volume = sfxVolume * masterVolume;
-
         if (debugMode)
             Debug.Log($"[AudioManager] Volumes applied → Master: {masterVolume}, BGM: {bgmVolume}, SFX: {sfxVolume}, UI: {uiVolume}");
     }
@@ -213,7 +241,6 @@ public class AudioManager : MonoBehaviour
     {
         var data = new SettingsSaveData(bgmVolume, uiVolume, QualitySettings.GetQualityLevel(), sfxVolume, masterVolume);
         SaveSystem.Save(SaveType.Settings, data);
-
         if (debugMode)
             Debug.Log("[AudioManager] Settings saved.");
     }
@@ -228,9 +255,11 @@ public class AudioManager : MonoBehaviour
             sfxVolume = data.sfxVolume;
             masterVolume = data.masterVolume;
             ApplyVolumes();
-
             if (debugMode)
                 Debug.Log("[AudioManager] Settings loaded successfully.");
         }
     }
+
+    public void StopBGM() => bgmSource?.Stop();
+    public void PauseBGM() => bgmSource?.Pause();
 }
