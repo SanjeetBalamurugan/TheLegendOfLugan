@@ -29,7 +29,7 @@ MonoBehaviour:
     volume: 0
     pitch: 0
   - key: footsteps
-    clip: {fileID: 8300000, guid: 3be546655c255bc46aac3cad01e1fec6, type: 3}
+    clip: {fileID: 8300000, guid: d026294c51dc1644e91b7e161fa7146e, type: 3}
     loop: 0
     volume: 0
     pitch: 0

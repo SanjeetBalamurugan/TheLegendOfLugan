@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 public class GraphicsSettingsMenu : MonoBehaviour
 {
     [Header("Graphics Presets")]
-    [SerializeField] private Dropdown presetDropdown;
+    [SerializeField] private TMP_Dropdown presetDropdown;
 
     [Header("Individual Settings")]
     [SerializeField] private Toggle vSyncToggle;
-    [SerializeField] private Dropdown shadowQualityDropdown; // 0 = Off, 1 = Low, 2 = Medium, 3 = High
-    [SerializeField] private Dropdown antiAliasingDropdown; // 0 = Off, 1 = 2x, 2 = 4x, 3 = 8x
+    [SerializeField] private TMP_Dropdown shadowQualityDropdown; // 0 = Off, 1 = Low, 2 = Medium, 3 = High
+    [SerializeField] private TMP_Dropdown antiAliasingDropdown; // 0 = Off, 1 = 2x, 2 = 4x, 3 = 8x
     [SerializeField] private Toggle postProcessingToggle;
 
     private void Start()
