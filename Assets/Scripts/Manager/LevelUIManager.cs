@@ -17,6 +17,9 @@ public class LevelUIManager : MonoBehaviour
     [SerializeField] private bool useAnim = true;
     [SerializeField] private float fadeDuration = 0.3f;
 
+    [Header("Fade Settings")]
+    [SerializeField] private string bgmKey = "level_main_theme";
+
     private CanvasGroup pauseCanvasGroup;
     private bool isPaused = false;
 
@@ -42,6 +45,8 @@ public class LevelUIManager : MonoBehaviour
 
         if (backButton != null)
             backButton.onClick.AddListener(BackToPauseMenu);
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -53,6 +58,8 @@ public class LevelUIManager : MonoBehaviour
             else
                 OpenPauseMenu();
         }
+
+        AudioManager.Instance.PlayBGM(bgmKey);
     }
 
     public void OpenPauseMenu()
@@ -69,6 +76,8 @@ public class LevelUIManager : MonoBehaviour
 
         Time.timeScale = 0f;
         isPaused = true;
+
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void ResumeGame()
@@ -88,6 +97,8 @@ public class LevelUIManager : MonoBehaviour
 
         Time.timeScale = 1f;
         isPaused = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void OpenSettings()

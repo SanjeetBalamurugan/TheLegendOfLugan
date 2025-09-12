@@ -84,8 +84,6 @@ public class TPVPlayerMove : MonoBehaviour
 
         if (playerModel != null && tryFix)
             modelLocalPos = playerModel.localPosition;
-
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
