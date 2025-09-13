@@ -212,7 +212,7 @@ public class AudioManager : MonoBehaviour
     {
         "BGM" => bgmVolume,
         "SFX" => sfxVolume,
-        "UI" => uiVolume,
+        "UI" => sfxVolume,
         "Master" => masterVolume,
         _ => 0,
     };
@@ -223,7 +223,7 @@ public class AudioManager : MonoBehaviour
         {
             case "BGM": bgmVolume = value; break;
             case "SFX": sfxVolume = value; break;
-            case "UI": uiVolume = value; break;
+            case "UI": sfxVolume = value; break;
             case "Master": masterVolume = value; break;
         }
         ApplyVolumes();
