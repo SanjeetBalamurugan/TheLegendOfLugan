@@ -8,6 +8,7 @@ public class UpPlatformButton : MonoBehaviour, IArrowInteractable
     [SerializeField] private Transform finalPlacement;
     [SerializeField] private List<GameObject> platformObjects;
     [SerializeField] private float moveSmoothness = 1f;
+    [SerializeField] private GameObject explosionPrefab;
 
     public void OnArrowHit(TPVPlayerCombat.ArrowType arrowType)
     {
@@ -31,5 +32,12 @@ public class UpPlatformButton : MonoBehaviour, IArrowInteractable
         }
 
         platform.transform.position = targetPos;
+
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, platform.transform.position, Quaternion.identity);
+        }
+
+        Destroy(gameObject); // Destroy the GameObject this script is attached to
     }
 }
