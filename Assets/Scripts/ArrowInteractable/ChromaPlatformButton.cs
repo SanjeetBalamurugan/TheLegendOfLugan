@@ -9,9 +9,11 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
     [SerializeField] private string alphaThresholdProperty = "_AlphaThreshold";
     [SerializeField] private float targetAlphaThreshold = 1f;
     [SerializeField] private float transitionDuration = 1f;
+    [SerializeField] private GameObject explosionPrefab;
 
     private Dictionary<Renderer, Coroutine> activeTransitions = new();
     private Dictionary<Renderer, Material> cachedMaterials = new();
+    private Dictionary<Renderer, Collider> cachedColliders = new();
 
     private void Awake()
     {
@@ -19,7 +21,12 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
         {
             if (rend == null) continue;
             cachedMaterials[rend] = rend.material;
-            rend.gameObject.GetComponent<Collider>().enabled = false;
+            var collider = rend.gameObject.GetComponent<Collider>();
+            if (collider != null)
+            {
+                cachedColliders[rend] = collider;
+                collider.enabled = false;
+            }
         }
     }
 
@@ -28,13 +35,24 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
         foreach (Renderer rend in platformRenderers)
         {
             if (rend == null) continue;
-            rend.gameObject.GetComponent<Collider>().enabled = true;
+
+            if (cachedColliders.ContainsKey(rend))
+            {
+                cachedColliders[rend].enabled = true;
+            }
 
             if (activeTransitions.ContainsKey(rend) && activeTransitions[rend] != null)
                 StopCoroutine(activeTransitions[rend]);
 
             activeTransitions[rend] = StartCoroutine(ChangeAlphaThreshold(rend));
         }
+
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+
+        Destroy(gameObject);
     }
 
     private IEnumerator ChangeAlphaThreshold(Renderer rend)
@@ -43,7 +61,6 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
 
         if (!mat.HasProperty(alphaThresholdProperty))
         {
-            Debug.LogWarning($"[ChromaPlatformButton] Material on '{rend.gameObject.name}' lacks property '{alphaThresholdProperty}'.");
             yield break;
         }
 
