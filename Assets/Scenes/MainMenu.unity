@@ -1600,14 +1600,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4
+      - m_Value: 0.2
         m_Name: Size
+        m_Overridden: 1
+      - m_Value: 200
+        m_Name: Count
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 400, y: 400, z: 400}
+      - m_Value: {x: 500, y: 500, z: 500}
         m_Name: Bounds
         m_Overridden: 1
     m_Vector4f:
