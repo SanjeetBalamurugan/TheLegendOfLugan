@@ -1533,6 +1533,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: targetAlphaThreshold
       value: 1
       objectReference: {fileID: 0}
@@ -2581,6 +2587,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
+        type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
     - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
         type: 3}
       propertyPath: platformObjects.Array.data[0]
@@ -4129,6 +4141,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
         type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
+    - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
+        type: 3}
       propertyPath: platformObjects.Array.data[0]
       value: 
       objectReference: {fileID: 1469710265}
@@ -4403,6 +4421,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: targetAlphaThreshold
       value: 1
       objectReference: {fileID: 0}
@@ -4509,6 +4533,8 @@ MonoBehaviour:
   alphaThresholdProperty: _AlphaThreshold
   targetAlphaThreshold: 1
   transitionDuration: 1
+  explosionPrefab: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+    type: 3}
 --- !u!1 &1557109131
 GameObject:
   m_ObjectHideFlags: 0
@@ -5457,6 +5483,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
         type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
+    - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
+        type: 3}
       propertyPath: platformObjects.Array.data[0]
       value: 
       objectReference: {fileID: 1563238414}
@@ -6247,6 +6279,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: targetAlphaThreshold
       value: 1
       objectReference: {fileID: 0}
@@ -6571,6 +6609,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
       propertyPath: targetAlphaThreshold
@@ -7485,6 +7529,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: targetAlphaThreshold
       value: 1
       objectReference: {fileID: 0}
@@ -8005,6 +8055,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
       propertyPath: targetAlphaThreshold
@@ -9272,6 +9328,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
+        type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7801489271462038912, guid: 80bd1e86596dee342bcd7eca720ef446,
+        type: 3}
     - target: {fileID: 8890497982066990052, guid: 87726c7e33a3be44ca0b351240600fbf,
         type: 3}
       propertyPath: platformObjects.Array.data[0]
