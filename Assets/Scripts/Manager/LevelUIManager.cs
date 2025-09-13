@@ -25,6 +25,8 @@ public class LevelUIManager : MonoBehaviour
 
     private void Start()
     {
+        QualitySettings.SetQualityLevel(5, true);
+
         if (pauseMenuPrefab != null)
         {
             pauseCanvasGroup = pauseMenuPrefab.GetComponent<CanvasGroup>();
