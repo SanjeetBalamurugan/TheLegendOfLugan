@@ -34,6 +34,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void Start()
     {
+QualitySettings.SetQualityLevel(2, true);
         if (levelSelectorUI != null)
         {
             levelSelectorUICanvas = levelSelectorUI.GetComponent<CanvasGroup>();
