@@ -25,7 +25,7 @@ public class LevelUIManager : MonoBehaviour
 
     private void Start()
     {
-        QualitySettings.SetQualityLevel(2, true);
+        
 
         if (pauseMenuPrefab != null)
         {
