@@ -27,7 +27,7 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         if (debugMode)
             Debug.Log("[AudioManager] Awake called");
