@@ -36,13 +36,21 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
         {
             if (rend == null) continue;
 
+            Material mat = cachedMaterials[rend];
+            if (mat.HasProperty(alphaThresholdProperty))
+            {
+                mat.SetFloat(alphaThresholdProperty, 1f);
+            }
+
             if (cachedColliders.ContainsKey(rend))
             {
                 cachedColliders[rend].enabled = true;
             }
 
             if (activeTransitions.ContainsKey(rend) && activeTransitions[rend] != null)
+            {
                 StopCoroutine(activeTransitions[rend]);
+            }
 
             activeTransitions[rend] = StartCoroutine(ChangeAlphaThreshold(rend));
         }
@@ -52,7 +60,7 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         }
 
-        Destroy(gameObject);
+        StartCoroutine(DestroyPlatformWithDelay());
     }
 
     private IEnumerator ChangeAlphaThreshold(Renderer rend)
@@ -80,5 +88,11 @@ public class ChromaPlatformButton : MonoBehaviour, IArrowInteractable
 
         mat.SetFloat(alphaThresholdProperty, targetAlphaThreshold);
         activeTransitions.Remove(rend);
+    }
+
+    private IEnumerator DestroyPlatformWithDelay()
+    {
+        yield return new WaitForSeconds(transitionDuration);
+        Destroy(gameObject);
     }
 }
