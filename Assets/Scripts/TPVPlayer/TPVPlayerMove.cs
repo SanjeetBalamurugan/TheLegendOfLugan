@@ -142,6 +142,7 @@ public class TPVPlayerMove : MonoBehaviour
         aimFreeLook.Priority = normalCamPriority;
         playerFreeLook.Priority = aimCamPriority;
         animator.SetLayerWeight(1, 0f);
+        AudioManager.Instance.PlaySFX("bow_release");
     }
 
     private void HandleJump()
