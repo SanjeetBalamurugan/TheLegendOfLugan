@@ -15,7 +15,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private bool debugMode = true;
 
     private List<AudioSource> sfxPool = new List<AudioSource>();
-    private float masterVolume = 1f, bgmVolume = 1f, sfxVolume = 1f, uiVolume = 1f;
+    private float masterVolume = 1f, bgmVolume = 1f, sfxVolume = 0.5f, uiVolume = 1f;
     private Coroutine crossfadeRoutine;
 
     private void Awake()
