@@ -200,32 +200,6 @@ Transform:
   m_Father: {fileID: 1023460609}
   m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &66722040 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8825063641093529276, guid: 0679b89d24f9dc64fbc3164d09360546,
-    type: 3}
-  m_PrefabInstance: {fileID: 5606683630927726402}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &66722041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66722040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa0cc90b60b52514b8adcb962b69060e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectName: Chroma Platform
-  platformRenderers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  alphaThresholdProperty: _AlphaThreshold
-  targetAlphaThreshold: 0.5
-  transitionDuration: 1
 --- !u!4 &128007984 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3159798782264367959, guid: db65366ea9e0c834e8a97e67f6316b5a,
@@ -1559,6 +1533,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: platformRenderers.Array.data[0]
       value: 
       objectReference: {fileID: 7265443251869392771}
@@ -2161,6 +2140,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4878069554837940865, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
       propertyPath: m_RootOrder
@@ -2226,7 +2210,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChromaInteractiveSphere (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0679b89d24f9dc64fbc3164d09360546, type: 3}
 --- !u!1 &658435410
 GameObject:
@@ -4418,6 +4403,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: platformRenderers.Array.data[0]
       value: 
       objectReference: {fileID: 7265443252804613225}
@@ -4517,7 +4507,7 @@ MonoBehaviour:
   - {fileID: 2420233778228808586}
   - {fileID: 3614913183859636914}
   alphaThresholdProperty: _AlphaThreshold
-  targetAlphaThreshold: 0.5
+  targetAlphaThreshold: 1
   transitionDuration: 1
 --- !u!1 &1557109131
 GameObject:
@@ -6225,6 +6215,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: platformRenderers.Array.data[0]
+      value: 
+      objectReference: {fileID: 7265443251390371945}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: platformRenderers.Array.data[1]
+      value: 
+      objectReference: {fileID: 7265443250855826163}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: platformRenderers.Array.data[2]
+      value: 
+      objectReference: {fileID: 7265443251493308433}
     - target: {fileID: 4878069554837940865, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
       propertyPath: m_RootOrder
@@ -6531,6 +6541,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
       propertyPath: platformRenderers.Array.data[0]
@@ -7440,6 +7455,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
       propertyPath: platformRenderers.Array.data[0]
       value: 
       objectReference: {fileID: 7265443252066456516}
@@ -7520,32 +7540,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0679b89d24f9dc64fbc3164d09360546, type: 3}
---- !u!1 &3256385093097566854 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8825063641093529276, guid: 0679b89d24f9dc64fbc3164d09360546,
-    type: 3}
-  m_PrefabInstance: {fileID: 3256385093097566853}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &3256385093097566855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3256385093097566854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa0cc90b60b52514b8adcb962b69060e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectName: Chroma Platform
-  platformRenderers:
-  - {fileID: 7265443252066456516}
-  - {fileID: 7265443251222219548}
-  - {fileID: 7265443251217003445}
-  alphaThresholdProperty: _AlphaThreshold
-  targetAlphaThreshold: 0.5
-  transitionDuration: 1
 --- !u!33 &3303161936699517842
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -7981,6 +7975,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
+        type: 3}
+      propertyPath: targetAlphaThreshold
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -3086943299407979298, guid: 0679b89d24f9dc64fbc3164d09360546,
         type: 3}
       propertyPath: platformRenderers.Array.data[0]
